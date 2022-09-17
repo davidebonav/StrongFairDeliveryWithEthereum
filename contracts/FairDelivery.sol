@@ -2,10 +2,16 @@
 pragma solidity ^0.8.17;
 
 import "./Ownable.sol";
+import "./IFairDelivery.sol";
 
-contract FairDelivery is Ownable{
+contract FairDelivery is Ownable, IFairDelivery{
 
-    type HASH is uint256;
+    // ** VARIABLES **
+    mapping (address => uint) labels; // public ? 
+    
+    
+    
+
 
 
 }
