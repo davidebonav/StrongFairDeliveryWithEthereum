@@ -6,12 +6,21 @@ import "./IFairDelivery.sol";
 
 contract FairDelivery is Ownable, IFairDelivery{
 
-    // ** VARIABLES **
-    mapping (address => uint) labels; // public ? 
-    
-    
-    
+    uint256 private constant MAX_INT = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
+    mapping (address => uint256) private currentLabel;
+    
+    function sendNonRepudiationOfOriginFlag (string calldata h_name, HASH hash ) public returns (bool) {
 
+        require(
+            currentLabel[msg.sender] < MAX_INT,
+            "ERRORE"
+        );
 
+        // emit 
+
+        
+
+        return true;
+    }
 }
