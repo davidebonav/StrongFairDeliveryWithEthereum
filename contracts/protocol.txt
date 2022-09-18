@@ -1,0 +1,87 @@
+
+H = qualsiasi funzione hash (scelta da A)
+H_name = stringa contenente il nome della funzione hash usata
+
+emailFrom = mittente email da recapitare con non ripudio
+emailTo = destinatario email da recapitare con non ripudio
+
+msg = messaggio da inviare
+cipher_name = stringa contenente il nome del cifrario simmetrico utilizzato
+C = cifrario cipher_name
+encMsg = C(key, msg) ==> {msg}_key 
+
+A(msg.sender) = address del mittente 
+B(msg.sender) = address del destinatario 
+
+
+label = contatore numero corrente di email certificata da A(msg.sender) 
+nonce = numero random
+timestamp
+
+------------ VERIONE 1 PROTOCOLLO ------------
+    A -> B : { "emailFrom" : "", "emailTo" : "", "encMsg" : "", "label" : "", "nonce" : "", "timestamp" : 0 }
+    A -> emit ( H_name, H(emailFrom||nonce), H(emailTo||nonce), H(encMsg||nonce), label, A(msg.sender), timstamp )
+    B -> emit ( H_name, H(emailFrom||nonce), H(emailTo||nonce), H(encMsg||nonce+1), label, pubK, A(msg.sender) )
+    A -> emit ( H_name, H(emailFrom||nonce), H(emailTo||nonce), {key}_pubK, label )
+
+------------ VERIONE 2 PROTOCOLLO ------------
+
+    - H decisa da A; H la stessa per tutti gli eventi?
+    - ( label, A(msg.sender) ) univoco per ogni log ? 
+
+    A -> B : { emailFrom, emailTo, encMsg, label, currentTimstamp0, H_name } 
+    A -> emit ( H_name, H(emailFrom||emailTo||encMsg||currentTimstamp0||label), label, A(msg.sender), currentTimstamp1 )
+    
+    B -> emit ( H_name, H(emailFrom||emailTo||encMsg||currentTimstamp1||label), label, pubK, A(msg.sender), currentTimstamp )
+    B -> A : { "non ripudio di ricezione emesso", label }
+
+    A -> emit ( H_name, H(key||label), {key}_pubK, label, currentTimstamp )
+
+------------ VERIONE 3 PROTOCOLLO ------------
+
+    Disponibilità di una PKI, ogni agente possiede una coppia di chiavi asimmetriche. Questo permette agli agenti di avere la certezza di chi l'interlocutore sia.
+        sign_A (m) = m,{h(m)}privK_a
+
+    Questa mail viene inviata sfruttando un
+    1. A -> B : 
+        from, 
+        to, 
+        encMsg, 
+        timestamp, 
+        label, 
+        [H_name], 
+        [A(msg.sender)],
+        [pubK_b (chiave di firma)]
+        sign_A ( ... )
+    la firma digitale è la firma dell'hash?
+
+    2. A -> emit : 
+        indexed label,
+        indexed A(msg.sender),
+        sign_A ( ... ),
+        timestamp
+        keccak256(H( from, to, encMsg, label+1 ))
+
+    A resta in ascolto su ( label, A(msg.sender) )
+
+    3. B -> emit :
+        indexed label,
+        indexed A(msg.sender),
+        sign_B (
+            sign_A    
+        ) oppure sign_B ( di tutto come A )?
+        pubK
+
+    4. A -> emit :
+        indexed label,
+        indexed A(msg.sender),
+        {key}_pubk
+
+proprietà che vogliamo garantire : 
+    - equo recapito forte
+    - nessuno è in grado di scoprire from, to ed msg 
+
+    
+
+
+
