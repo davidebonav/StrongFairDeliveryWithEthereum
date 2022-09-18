@@ -25,7 +25,7 @@ interface IFairDelivery {
 
     // -- FUNCTIONS --
     function currentLabel (address) external returns(uint256);
-    function nonRepudiationOfOrigin (Signature, bytes32) external returns(uint256 label);
+    function nonRepudiationOfOrigin (Signature, bytes32) payable external returns(uint256 label);
     function nonRepudiationOfReceipt (Signature, address, uint256, Hash) external;
     function submissionOfKey (SymmetricKey, Signature, uint256) external;
 

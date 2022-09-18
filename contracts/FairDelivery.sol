@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./Ownable.sol";
+import "./Destructible.sol";
 import "./IFairDelivery.sol";
+import "./Payable.sol";
 
-contract FairDelivery is Ownable, IFairDelivery{
+contract FairDelivery is Payable, Destructible, IFairDelivery{
     // -- Types --
     struct StateData {
         bytes32 proofToDo;
@@ -43,11 +44,17 @@ contract FairDelivery is Ownable, IFairDelivery{
         _;
     }
 
+    constructor(uint256 minFee) Payable (minFee) {
+        
+    }
+
     function nonRepudiationOfOrigin ( Signature nro, bytes32 proofToDo ) 
+        payable
         external 
         override 
         labelsAvailable 
         checkEmailState(EmailState.NOT_USED, currentEmailState[msg.sender][currentLabel[msg.sender]].state)
+        enoughFee
         returns(uint256 label) 
     {
         label = currentLabel[msg.sender]++;

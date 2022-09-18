@@ -8,7 +8,7 @@ abstract contract Ownable {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    address private _owner;
+    address public owner;
 
     constructor() {
         _transferOwnership(msg.sender);
@@ -22,24 +22,16 @@ abstract contract Ownable {
 
     // ** INTERNAL FUNCTIONS **
     function _transferOwnership(address newOwner) internal virtual {
-        address oldOwner = _owner;
-        _owner = newOwner;
+        address oldOwner = owner;
+        owner = payable(newOwner);
         emit OwnershipTransferred(oldOwner, newOwner);
     }
 
     function _checkOwner() internal view virtual {
-        require(owner() == msg.sender, "Ownable: caller is not the owner");
+        require(owner == msg.sender, "Ownable: caller is not the owner");
     }
 
     // ** PUBLIC FUNCTIONS **
-    function owner() public view virtual returns (address) {
-        return _owner;
-    }
-
-    // function renounceOwnership() public virtual onlyOwner {
-    //     _transferOwnership(address(0));
-    // }
-
     function transferOwnership(address newOwner) public virtual onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
         _transferOwnership(newOwner);
