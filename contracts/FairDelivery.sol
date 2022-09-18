@@ -77,7 +77,6 @@ contract FairDelivery is Ownable, IFairDelivery{
         external 
         override 
         checkEmailState(EmailState.NRR, currentEmailState[msg.sender][currentLabel[msg.sender]].state)
-
     {
         currentEmailState[msg.sender][label].state = EmailState.CON_K;
         delete currentEmailState[msg.sender][label].proofToDo;
