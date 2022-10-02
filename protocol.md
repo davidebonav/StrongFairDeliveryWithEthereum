@@ -22,17 +22,31 @@ Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguar
     > _Def:_ Il ricevente legga l'e-mail, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
 
 ## Obiettivi progetto
-In Italia la _Posta Elettronica Certificata_ (o PEC) ha valore legale equiparato ad una raccomandata con ricevuta di ritorno. Essa garantisce l'equo recapito debole (o forte). 
-Per poterla usare però serve creare una nuova casella di posta.
+Questo progetto ~~presenta~~ propone una variante del protocollo [Zhou\-Gollmann](https://conferences.computer.org/sp/pdfs/csf/1997/1997-zhou-efficient.pdf) ~~, proponendo uno~~ che sfrutta uno _Smart Contract_ ([Ethereum](https://ethereum.org/it/smart-contracts/)) per svolgere il ruolo di _Trusted Third Party_ (o TTP). 
+Oltre alla definizione del protocollo viene proposta anche un'implementazione in [Solidity](https://docs.soliditylang.org/en/v0.8.17/) dello _Smart Contract_ in questione (presentato) ~~ed un piccolo front end in React per interagire con lo Smart Contract~~. 
 
-SMART CONTRACT TTP
+~~Mediante lo _Smart Contract_~~ Il protocollo proposto si pone come obiettivo quello di permette ad un qualunque **mittente** ed ad un qualunque **destinatario** di scambiare messaggi sfruttando un qualunque mail provider, (un qualunque servizio per lo scambio di messaggi), ottenendo le seguenti proprietà si sicurezza.
 
-***
-### Confidenzialità 
-### Integrità
+**1. Equo recapito forte**
 
+---
+1. equo recapito forte sui messaggi scambiati (impossibilità di negare le proprie azioni)
+2. Integrità
+3. Anonimato sulla blockchain (nessuno ed in grado di associare l'email del mittente e l'email del destinatario sulla blockchain)
+4. Confidenzialità
+5. Autenticazion (PKI)
+
+
+---
+
+~~In Italia la _Posta Elettronica Certificata_ (o PEC) ha valore legale equiparato ad una raccomandata con ricevuta di ritorno. Essa garantisce l'equo recapito debole (o forte). 
+Per poterla usare però serve creare una nuova casella di posta.~~
 
 ******
+
+# Protocollo
+
+Il protocollo si svolge fra due agenti, una agente A (mittente) ed un agente B (destinatario) nello scenario in cui A e B vogliono scambiare un messaggio con _equo recapito forte_.
 
 H = qualsiasi funzione hash (scelta da A)
 H_name = stringa contenente il nome della funzione hash usata
