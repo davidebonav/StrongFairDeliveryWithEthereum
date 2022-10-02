@@ -27,14 +27,33 @@ Oltre alla definizione del protocollo viene proposta anche un'implementazione in
 
 ~~Mediante lo _Smart Contract_~~ Il protocollo proposto si pone come obiettivo quello di permette ad un qualunque **mittente** ed ad un qualunque **destinatario** di scambiare messaggi sfruttando un qualunque mail provider, (un qualunque servizio per lo scambio di messaggi), ottenendo le seguenti proprietà si sicurezza.
 
-**1. Equo recapito forte**
+    ~~proprietà che vogliamo garantire : (1) equo recapito forte (2) nessuno è in grado di scoprire from, to ed msg (3) messuno scopre chi comunica con chi~~
 
----
-1. equo recapito forte sui messaggi scambiati (impossibilità di negare le proprie azioni)
-2. Integrità
-3. Anonimato sulla blockchain (nessuno ed in grado di associare l'email del mittente e l'email del destinatario sulla blockchain)
-4. Confidenzialità
-5. Autenticazion (PKI)
+**1. Equo recapito forte**.
+> Il ricevente legga l'e-mail, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
+
+Grazie a questa proprietà di sicurezza il mittente è in grado di smascherare il destinatario se nega la ricezione del messaggio, così come il destinatario è in grado di smascjerare il mittente se nega l'invio del messaggio.
+Questa proprietà fornische la garanzia che sia il mittente che il destinatario sono impossibilitati di negare le proprie azioni.
+
+**2. Integrità**. 
+> Il ricevente riceva il messaggio avendo garanzia che sia ricevuto così come inviato dal mittente.
+
+Grazie a questa proprietà il destinatario ha la certezza che il messaggio che riceve è il messaggio che il mittente voleva spedire. Questa proprietà garantisce che il messaggio arrivi integro così come è stato spedito.
+
+**3. Autenticazione**.
+> Il ricevente riceva evidenza che il messaggio è stato spedito dal mittente, così come il mittente riceva evidenza che il messaggio è stato spedito dal destinatario.
+
+~~PKI~~
+
+**4. ~~Pseudo~~Anonimato sulla Blockchain**. 
+> Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla sua email, così come per il destinatario.
+
+(nessuno ed in grado di associare l'email del mittente e l'email del destinatario sulla blockchain)
+
+**5. Confidenzialità sulla Blockchain**.
+> Nessuno sia in grado di conoscere il contenuto del messaggio, ad eccezione del mittente e del destinatario.
+
+Nessuno è in grado di scoprire il contenuto del messaggio scambiato ad eccezione del mettitente de del destinatario.
 
 
 ---
@@ -42,7 +61,7 @@ Oltre alla definizione del protocollo viene proposta anche un'implementazione in
 ~~In Italia la _Posta Elettronica Certificata_ (o PEC) ha valore legale equiparato ad una raccomandata con ricevuta di ritorno. Essa garantisce l'equo recapito debole (o forte). 
 Per poterla usare però serve creare una nuova casella di posta.~~
 
-******
+***
 
 # Protocollo
 
@@ -111,7 +130,4 @@ pub_sign_b = chiave pubblica di firma di B
         sign_A ( sub_k ) = sign_A ( from || to || key || label )
         currentTimestamp
 
-proprietà che vogliamo garantire : 
-    - equo recapito forte
-    - nessuno è in grado di scoprire from, to ed msg
-    - messuno scopre chi comunica con chi
+# Analisi protocollo
