@@ -43,10 +43,12 @@ Grazie a questa proprietà il destinatario ha la certezza che il messaggio che r
 **3. Autenticazione**.
 > Il ricevente riceva evidenza che il messaggio è stato spedito dal mittente, così come il mittente riceva evidenza che il messaggio è stato spedito dal destinatario.
 
+Nessuno è in grado di rispondere per conto del destinatario. 
+
 ~~PKI~~
 
 **4. ~~Pseudo~~Anonimato sulla Blockchain**. 
-> Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla sua email, così come per il destinatario.
+> Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla sua email, così come per il destinatario. (ad eccezione di mittente e destinatario)
 
 (nessuno ed in grado di associare l'email del mittente e l'email del destinatario sulla blockchain)
 
@@ -64,6 +66,59 @@ Per poterla usare però serve creare una nuova casella di posta.~~
 ***
 
 # Protocollo
+
+Questo protocollo fa uso di una funzione hash crittografica, che indichiamo $H$, e di un cifrario simmetrico (sicuro? funzione pseudo causale), che indichiamo con $C$. 
+
+È il mittente ad iniziare il protocollo. Sia 
+- $emailFrom$ = indirizzo email del mittente
+- $emailTo$ = indirizzo email del destinatario
+- $msg$ = il messaggio che il mittente vuole spedire al desinatario
+- $k$ = una chiave simmetrica generata randomicamente del mittente
+- $encMsg$ = $Enc_{AES.CBC}(k, msg)$
+- $sign_A (m)$ = $m,\{H(m)\}_{privK_A}$ 
+    - dove $H$ è una funzione hash
+
+
+A -> B: emailFrom, emailTo, encMsg, label, $sign_A(emailFrom, emailTo, encMsg, label)$
+
+
+1. A -> B : 
+        from 
+        to
+        encMsg
+        timestamp 
+        label 
+        A(msg.sender)
+        pub_sign_b
+        sign_scheme_name
+        hash_func_name
+
+        sign_A ( from || to || encMsg || timestamp || label || A(msg.sender) || pub_sign_b || sign_scheme_name || hash_func_name ) = sign_A ( Fnro )
+
+    2. A -> emit : 
+        indexed struct( label, A(msg.sender) )
+        sign_A ( Fnro )
+        currentTimestamp
+    
+    A invia al contratto 
+        keccak256(H( from, to, encMsg, label ))
+    questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
+    calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
+
+    3. B -> emit :
+        indexed struct( label, A(msg.sender) )
+        sign_B ( sign_A ( Fnro ) || pubK ) = sign_B ( Fnrr )
+        currentTimestamp
+
+    A resta in ascolto su ( label, A(msg.sender) )
+
+    4. A -> emit :
+        indexed struct( label, A(msg.sender) )
+        key
+        sign_A ( sub_k ) = sign_A ( from || to || key || label )
+        currentTimestamp
+
+---
 
 Il protocollo si svolge fra due agenti, una agente A (mittente) ed un agente B (destinatario) nello scenario in cui A e B vogliono scambiare un messaggio con _equo recapito forte_.
 
