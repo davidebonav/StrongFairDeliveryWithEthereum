@@ -48,7 +48,7 @@ Il protocollo fornisce al riceve la certezza che il messaggio ricevuto sia quell
 
 Il ricevente ottiene garazie riguarda l'idnetità del mittente grazie alla proprità $1$. Il protocollo fornisce le stesse garanzie al mittente riguardo l'identità del ricevente.
 
-Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).
+~~Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).~~ Questo vale anche per la proprietà 1 può quindi essere specificato dopo
 
 **4. Confidenzialità sulla Blockchain**.
 > Nessuno è in grado di determinare il contenuto del messaggio, l'email del mittente e l'email del ricevente essendo in possesso unicamente delle transazioni pubblicate sulla Blockchain.
@@ -67,20 +67,79 @@ Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla s
 
 # Protocollo
 
-Questo protocollo fa uso di una funzione hash crittografica, che indichiamo $H$, e di un cifrario simmetrico (sicuro? funzione pseudo causale), che indichiamo con $C$. 
+## Strumenti crittografici (Notazione)
 
-È il mittente ad iniziare il protocollo. Sia 
-- $emailFrom$ = indirizzo email del mittente
-- $emailTo$ = indirizzo email del destinatario
-- $msg$ = il messaggio che il mittente vuole spedire al desinatario
-- $k$ = una chiave simmetrica generata randomicamente del mittente
+(chiarmente la qualità del protocollo ottenuto dipende anche dagli strumenti crittografici usati durante l'implemententazione, ma forse non serve specificarlo)
+
+Il protocollo utilizza i seguenti strumenti crittografici:
+- una funzione hash crittografica $H$ (crittograficamente sicura)
+    - $H(m)$ : applicazione della funzione hash $H$ con input il messaggio $m$.
+- un cifrario simmetrico $C$
+    - $Enc_C(k,m)$ : cifratura del messaggio $m$ con chiave $k$ 
+    - $Dec_C(k,c)$ : decifratura del crittotesto $c$ con chiave $k$
+- uno schema di firma $S$
+    - $Sign_A(m)$ : firma dell'agente $A$ sul messaggio $m$
+    - $Ver_A(s, m)$ : verifica della firma $s$ effettuata dall'agente $A$ sul messaggio $m$ 
+
+- $adddress_X$ : indirizzo ethereum di $X$ (un qualsiasi indirizzo di cui X conosce la chiave privata, una qualunque identità su ethereum di X, qualsiasi address per cui X può creare firme valide (conosce chiav eprivata))
+
+I flag descritti all'interno del protocollo Zhou\-Gollmann sono qua sostituiti da eventi emessi sulla blockchain.
+
+## Descrizione protocollo
+
+Il protocollo si svolge fra due agenti, una agente A (mittente) ed un agente B (ricevente o destinatario) nello scenario in cui A e B vogliono scambiare un messaggio $msg$ con _equo recapito forte_.
+
+Il protocollo può essere riassunto nei seguenti passi.
+
+**1. Invio del messaggio $m$**
+
+>$A$ --> $B$ :
+    $A$, $B$, $encMsg$, $label$, $address_A$, $sign_A(A, B, encMsg, label)$
+
+dove:
 - $encMsg$ = $Enc_{AES.CBC}(k, msg)$
-- $sign_A (m)$ = $m,\{H(m)\}_{privK_A}$ 
-    - dove $H$ è una funzione hash
+- $label$ = contatore restituito dallo Smart Contract
+- $address_A$ = indirizzio ethereum di A
+
+indexed struct( label, A(msg.sender) ) sono univoci
+
+È il mittente ad iniziare il protoccollo con il destinatario. Il mittente (, sfruttando un qualsiasi canale di cominicazione, quale una mail, whatsapp, telegram, un foglio di carta, un messaggio normale, un qualsiasi canale di comunicazione). L'invio deve avvenire mediante un canale sicuro, altrimenti la confidenzialità del messaggio non può essere garantita.
+
+(A utilizza address_A)
+> A --> SmartContract :
+    $sign_A(A, B, encMsg, label)$
+    keccak256(H( A, B, encMsg, label, address_A ))
+
+    A invia al contratto 
+        keccak256(H( from, to, encMsg, label ))
+    questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
+    calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
+
+> SmartContract -> emit : 
+        indexed struct( label, A(msg.sender) )
+        $sign_A(A, B, encMsg, label)$
+        currentTimestamp
+
+> B -> SmartContract :
+        H( A, B, encMsg, label, address_A )
+        label
+        address_A
+        sign_B ( Fnro )
+
+dove Fnro = $sign_A(A, B, encMsg, label)$
+
+SmartContract controlla H( A, B, encMsg, label, address_A ) è determina l'autorizzazione a poter accettare il messaggio, dopo di che
+
+> Smart -> contract-> emit
+        indexed struct( label, A(msg.sender) )
+        sign_B ( Fnro )
+        currentTimestamp
+
+Lo SmartContract quindi emette sulla blockchain l'evento rappresentante il flag non ripudio di origine.
 
 
-A -> B: emailFrom, emailTo, encMsg, label, $sign_A(emailFrom, emailTo, encMsg, label)$
 
+---
 
 1. A -> B : 
         from 
@@ -120,32 +179,9 @@ A -> B: emailFrom, emailTo, encMsg, label, $sign_A(emailFrom, emailTo, encMsg, l
 
 ---
 
-Il protocollo si svolge fra due agenti, una agente A (mittente) ed un agente B (destinatario) nello scenario in cui A e B vogliono scambiare un messaggio con _equo recapito forte_.
-
-H = qualsiasi funzione hash (scelta da A)
-H_name = stringa contenente il nome della funzione hash usata
-
-emailFrom = mittente email da recapitare con non ripudio
-emailTo = destinatario email da recapitare con non ripudio
-
-msg = messaggio da inviare
-cipher_name = stringa contenente il nome del cifrario simmetrico utilizzato
-C = cifrario cipher_name
-encMsg = C(key, msg) ==> {msg}_key 
-
-A(msg.sender) = address del mittente 
-B(msg.sender) = address del destinatario 
-
-
-label = contatore numero corrente di email certificata da A(msg.sender) 
-nonce = numero random
-timestamp
-
-pub_sign_b = chiave pubblica di firma di B
-
 ------------ PROTOCOLLO ------------
 
-    Disponibilità di una PKI, ogni agente possiede una coppia di chiavi asimmetriche. Questo permette agli agenti di avere la certezza di chi l'interlocutore sia.
+    Disponibilità di una PKI, ogni agente possiede una coppia di chiavi di firma. Questo permette agli agenti di avere la certezza di chi l'interlocutore sia.
         sign_A (m) = m,{h(m)}privK_a
 
     Questa mail viene inviata sfruttando un
