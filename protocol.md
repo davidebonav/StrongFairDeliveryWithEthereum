@@ -4,15 +4,15 @@
 # Equo Recapito Forte tramite blockchain Ethereum
 
 ## Introduzione
-Il _non ripudio_ è una delle principali proprietà di sicurezza che trova applicazione in numerosi contesti.
-Formalmente questa proprietà di sicurezza può essere definita come:
+Il _non ripudio_ è una delle principali proprietà di sicurezza, essa trova applicazione in numerosi contesti.
+Formalmente questa proprietà ~~di sicurezza~~ può essere definita come:
 
 > _Def:_ La disponibilità di un'evidenza inequivocabile che impedisca a un soggetto di negare le proprie azioni.
 
 Il non ripudio non è quindi una misura preventiva ma è una contromisura. Esso non impedisce di negare le proprie azioni, ma fornisce una certa evidenza che impedisce di negare la partecipazione ad una azione.
 
 Nei protocolli di sicurezza che garantiscono questa proprietà l'evidenza deve necessariamente essere materiale crittografico, tipicamente ottenuto mediante la firma digitale.
-Chiaramente la semplice firma digitale non basta a garantire la proprietà. Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo, inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.
+Chiaramente la semplice firma digitale non basta a garantire la proprietà. Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.
 
 Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguarda la posta elettronica. Nel caso del non ripudio per la posta elettronica possiamo distinguere due differenti livelli (incarnazioni) di queste proprietà:
 
@@ -30,40 +30,40 @@ Oltre alla definizione del protocollo viene proposta anche un'implementazione in
     ~~proprietà che vogliamo garantire : (1) equo recapito forte (2) nessuno è in grado di scoprire from, to ed msg (3) messuno scopre chi comunica con chi~~
 
 **1. Equo recapito forte**.
-> Il ricevente legga l'e-mail, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
+> Il ricevente è in grado di leggere la mail, ottenendo pure evidenza che viene dal mittente, se e solo se (contestualmente al fatto che) il mittente riceve la ricevuta di ritorno.
 
-Grazie a questa proprietà di sicurezza il mittente è in grado di smascherare il destinatario se nega la ricezione del messaggio, così come il destinatario è in grado di smascjerare il mittente se nega l'invio del messaggio.
-Questa proprietà fornische la garanzia che sia il mittente che il destinatario sono impossibilitati di negare le proprie azioni.
+Il protocollo fornisce a mittente e ricevente le seguenti evidenze:
+- Se il mittente invia il messaggio, il ricevente ottiene l'evidenza che il messaggio è stato inviato dal mittente.
+- Se il ricevente legge il messaggio, il mittente ottiene l'evidenza che permette di dimostrare che il messaggio sia stato letto dal ricevente.
+
+Inoltre, le evidenze sono ricevute contesualmente.
 
 **2. Integrità**. 
-> Il ricevente riceva il messaggio avendo garanzia che sia ricevuto così come inviato dal mittente.
+> Il ricevente è in grado di verificare l'integrità del messaggio ricevuto.
 
-Grazie a questa proprietà il destinatario ha la certezza che il messaggio che riceve è il messaggio che il mittente voleva spedire. Questa proprietà garantisce che il messaggio arrivi integro così come è stato spedito.
+Il protocollo fornisce al riceve la certezza che il messaggio ricevuto sia quello che il mittente voleva spedire.
 
-**3. Autenticazione**.
-> Il ricevente riceva evidenza che il messaggio è stato spedito dal mittente, così come il mittente riceva evidenza che il messaggio è stato spedito dal destinatario.
+**3. Autenticazione (del ricevente con il mittente)**.
+> Il mittente riceve garanzia che il messaggio sia stato ricevuto dal corretto ricevente.
 
-Nessuno è in grado di rispondere per conto del destinatario. 
+Il ricevente ottiene garazie riguarda l'idnetità del mittente grazie alla proprità $1$. Il protocollo fornisce le stesse garanzie al mittente riguardo l'identità del ricevente.
 
-~~PKI~~
+Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).
 
-**4. ~~Pseudo~~Anonimato sulla Blockchain**. 
-> Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla sua email, così come per il destinatario. (ad eccezione di mittente e destinatario)
+**4. Confidenzialità sulla Blockchain**.
+> Nessuno è in grado di determinare il contenuto del messaggio, l'email del mittente e l'email del ricevente essendo in possesso unicamente delle transazioni pubblicate sulla Blockchain.
 
+La proprietà è garantita solo se il mittente e il ricevente non pubblichano ulteriori informazioni rispetto a quelle previste dal protocollo (in un qualsiasi posto).
+
+--- 
+**TODO**
+5\. ~~Pseudo~~Anonimato sulla Blockchain. 
+Il protocollo fornisce una forma debole di anonimato. 
+Se mittente e ricevente utilizzan o una identitaà sulla blockchain differente per ogni messaggio inviato o ricevuto, allora il protocollo garantisce anonimato.
+Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla sua email, così come per il destinatario. (ad eccezione di mittente e destinatario)
 (nessuno ed in grado di associare l'email del mittente e l'email del destinatario sulla blockchain)
 
-**5. Confidenzialità sulla Blockchain**.
-> Nessuno sia in grado di conoscere il contenuto del messaggio, ad eccezione del mittente e del destinatario.
-
-Nessuno è in grado di scoprire il contenuto del messaggio scambiato ad eccezione del mettitente de del destinatario.
-
-
 ---
-
-~~In Italia la _Posta Elettronica Certificata_ (o PEC) ha valore legale equiparato ad una raccomandata con ricevuta di ritorno. Essa garantisce l'equo recapito debole (o forte). 
-Per poterla usare però serve creare una nuova casella di posta.~~
-
-***
 
 # Protocollo
 
