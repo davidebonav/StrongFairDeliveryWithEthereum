@@ -4,22 +4,23 @@
 # Equo Recapito Forte tramite blockchain Ethereum
 
 ## Introduzione
-Il _non ripudio_ è una delle principali proprietà di sicurezza, essa trova applicazione in numerosi contesti.
-Formalmente questa proprietà ~~di sicurezza~~ può essere definita come:
+Il _non ripudio_ è una delle principali proprietà di sicurezza, la quale trova applicazione in numerosi contesti. Formalmente può essere definito come:
 
 > _Def:_ La disponibilità di un'evidenza inequivocabile che impedisca a un soggetto di negare le proprie azioni.
 
-Il non ripudio non è quindi una misura preventiva ma è una contromisura. Esso non impedisce di negare le proprie azioni, ma fornisce una certa evidenza che impedisce di negare la partecipazione ad una azione.
+Il non ripudio non è una misura preventiva, è una contromisura. Esso non impedisce l'atto di negare la partecipazione ad un'azione, ma fornisce l'evidenza che permette di dimostrare che in realtà l'azione è stata compiuta.
 
 Nei protocolli di sicurezza che garantiscono questa proprietà l'evidenza deve necessariamente essere materiale crittografico, tipicamente ottenuto mediante la firma digitale.
-Chiaramente la semplice firma digitale non basta a garantire la proprietà. Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.
+Chiaramente la semplice firma digitale non basta a garantire la proprietà. Deve essere il protocollo all'interno del quale viene usata a garantire che la proprietà di non ripudio valga.
 
-Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguarda la posta elettronica. Nel caso del non ripudio per la posta elettronica possiamo distinguere due differenti livelli (incarnazioni) di queste proprietà:
+Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.
+
+Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguarda la posta elettronica, con più precisione lo scambio di messaggi. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
 
 - **Equo recapito debole**
-    > _Def:_ Il ricevente legga l'e-mail se e solo se il mittente riceva la ricevuta di ritorno.
+    > _Def:_ Il ricevente legga il messaggio se e solo se il mittente riceva la ricevuta di ritorno.
 - **Equo recapito forte**
-    > _Def:_ Il ricevente legga l'e-mail, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
+    > _Def:_ Il ricevente legga il messaggio, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
 
 ## Obiettivi progetto
 Questo progetto ~~presenta~~ propone una variante del protocollo [Zhou\-Gollmann](https://conferences.computer.org/sp/pdfs/csf/1997/1997-zhou-efficient.pdf) ~~, proponendo uno~~ che sfrutta uno _Smart Contract_ ([Ethereum](https://ethereum.org/it/smart-contracts/)) per svolgere il ruolo di _Trusted Third Party_ (o TTP). 
@@ -73,15 +74,15 @@ Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla s
 
 Il protocollo utilizza i seguenti strumenti crittografici:
 - una funzione hash crittografica $H$ (crittograficamente sicura)
-    - $H(m)$ : applicazione della funzione hash $H$ con input il messaggio $m$.
+    - $H(x)$ : applicazione della funzione hash $H$ con input $x$.
 - un cifrario simmetrico $C$
-    - $Enc_C(k,m)$ : cifratura del messaggio $m$ con chiave $k$ 
-    - $Dec_C(k,c)$ : decifratura del crittotesto $c$ con chiave $k$
+    - $Enc_C(k,x)$ : cifratura del testo in chiaro $x$ con chiave $k$ 
+    - $Dec_C(k,y)$ : decifratura del crittotesto $y$ con chiave $k$
 - uno schema di firma $S$
-    - $Sign_A(m)$ : firma dell'agente $A$ sul messaggio $m$
-    - $Ver_A(s, m)$ : verifica della firma $s$ effettuata dall'agente $A$ sul messaggio $m$ 
-
-- $adddress_X$ : indirizzo ethereum di $X$ (un qualsiasi indirizzo di cui X conosce la chiave privata, una qualunque identità su ethereum di X, qualsiasi address per cui X può creare firme valide (conosce chiav eprivata))
+    - $Sign_A(x)$ : firma dell'agente $A$ sulla stringa $x$
+    - $Ver_A(s, x)$ : verifica della firma $s$ effettuata dall'agente $A$ sulla stringa $x$ 
+- $X, Y$ concatenazione del messaggio $X$ con il messaggio $Y$
+- $adddress_A$ : indirizzo ethereum di $A$ (un qualsiasi indirizzo di cui A conosce la chiave privata, una qualunque identità su ethereum di A, qualsiasi address per cui A può creare firme valide (conosce chiav eprivata))
 
 I flag descritti all'interno del protocollo Zhou\-Gollmann sono qua sostituiti da eventi emessi sulla blockchain.
 
