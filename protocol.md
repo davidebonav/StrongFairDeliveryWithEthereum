@@ -55,6 +55,7 @@ Per rappresentare i messaggi è il protocollo è usata la seguente notazoine:
     - $Dec_C(k,y)$ : decifratura del crittotesto $y$ con chiave $k$
 - $S$ = schema asimmetrico di firma 
     - $Sign_A(x)$ : firma dell'agente $A$ sul messaggio $x$
+        - $sign_A(m) = \{h(m)\}privK_A$ (solo crittotesto, senza messaggio)
     - $Ver_A(s, x)$ : verifica della firma $s$ effettuata dall'agente $A$ sum messaggio $x$ 
 - $\{x, y\}$ : concatenazione del messaggio $x$ con il messaggio $y$
 - $addr_A$ : un qualunque indirizzo ethereum dell'agente $A$
@@ -90,11 +91,15 @@ Prima di poter iniziare il protocollo con il destinatario il mittente quindi pri
 ### 1. Invio del crittotesto a B
 È il mittente ad iniziare il protoccollo con il destinatario. L'invio deve avvenire mediante un canale sicuro, altrimenti la confidenzialità del messaggio non può essere garantita.
 
+B resta in ascolto su ( label, A(msg.sender) )
+
 ### 2. Pubblicazione del flag _nro_
 A invia al contratto 
     keccak256(H( from, to, encMsg, label ))
 questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
 calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
+
+A resta in ascolto su ( label, A(msg.sender) )
 
 ### 3. Conferma di ricezione del crittotesto da parte di B
 SmartContract controlla H( A, B, encMsg, label, address_A ) è determina l'autorizzazione a poter accettare il messaggio, dopo di che
@@ -133,90 +138,9 @@ Lo SmartContract quindi emette sulla blockchain l'evento rappresentante il flag 
 >4.2 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ k,\ SUB\_K$
 
-
 ---
 
-1. A -> B : 
-        from 
-        to
-        encMsg
-        timestamp 
-        label 
-        A(msg.sender)
-        pub_sign_b
-        sign_scheme_name
-        hash_func_name
-
-        sign_A ( from || to || encMsg || timestamp || label || A(msg.sender) || pub_sign_b || sign_scheme_name || hash_func_name ) = sign_A ( Fnro )
-
-    2. A -> emit : 
-        indexed struct( label, A(msg.sender) )
-        sign_A ( Fnro )
-        currentTimestamp
-    
-    A invia al contratto 
-        keccak256(H( from, to, encMsg, label ))
-    questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
-    calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
-
-    3. B -> emit :
-        indexed struct( label, A(msg.sender) )
-        sign_B ( sign_A ( Fnro ) || pubK ) = sign_B ( Fnrr )
-        currentTimestamp
-
-    A resta in ascolto su ( label, A(msg.sender) )
-
-    4. A -> emit :
-        indexed struct( label, A(msg.sender) )
-        key
-        sign_A ( sub_k ) = sign_A ( from || to || key || label )
-        currentTimestamp
-
----
-
------------- PROTOCOLLO ------------
-
-    Disponibilità di una PKI, ogni agente possiede una coppia di chiavi di firma. Questo permette agli agenti di avere la certezza di chi l'interlocutore sia.
-        sign_A (m) = m,{h(m)}privK_a
-
-    Questa mail viene inviata sfruttando un
-    1. A -> B : 
-        from 
-        to
-        encMsg
-        timestamp 
-        label 
-        A(msg.sender)
-        pub_sign_b
-        sign_scheme_name
-        hash_func_name
-
-        sign_A ( from || to || encMsg || timestamp || label || A(msg.sender) || pub_sign_b || sign_scheme_name || hash_func_name ) = sign_A ( Fnro )
-
-    2. A -> emit : 
-        indexed struct( label, A(msg.sender) )
-        sign_A ( Fnro )
-        currentTimestamp
-    
-    A invia al contratto 
-        keccak256(H( from, to, encMsg, label ))
-    questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
-    calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
-
-    3. B -> emit :
-        indexed struct( label, A(msg.sender) )
-        sign_B ( sign_A ( Fnro ) || pubK ) = sign_B ( Fnrr )
-        currentTimestamp
-
-    A resta in ascolto su ( label, A(msg.sender) )
-
-    4. A -> emit :
-        indexed struct( label, A(msg.sender) )
-        key
-        sign_A ( sub_k ) = sign_A ( from || to || key || label )
-        currentTimestamp
-
-# Analisi protocollo
+## Analisi protocollo
 
 **1. Equo recapito forte**.
 Affinché questa proprietà sia soddisfatta devono dimostrare le seguenti condizioni:
@@ -233,6 +157,8 @@ Dimostrare che sia mittente che ricevente hanno la certezza di chi sia l'interlo
 Il ricevente ottiene garazie riguarda l'idnetità del mittente grazie alla proprità $1$. Il protocollo fornisce le stesse garanzie al mittente riguardo l'identità del ricevente.
 
 ~~Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).~~ Questo vale anche per la proprietà 1 può quindi essere specificato dopo
+
+Disponibilità di una PKI, ogni agente possiede una coppia di chiavi di firma. Questo permette agli agenti di avere la certezza di chi l'interlocutore sia.
 
 **4. Confidenzialità sulla Blockchain**.
 
