@@ -47,7 +47,7 @@ Le proprietà di sicurezza garantite sono le seguenti:
 
 ### Notazione
 
-Per rappresentare i messaggi è il protocollo è usata la seguente notazoine:
+Per rappresentare i messaggi e il protocollo è usata la seguente notazoine:
 - $H$ = funzione hash crittograficamente sicura
     - $H(x)$ : applicazione della funzione hash $H$ all'input $x$.
 - $C$ = cifrario simmetrico 
