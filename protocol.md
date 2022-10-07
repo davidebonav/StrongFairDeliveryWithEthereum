@@ -4,6 +4,7 @@
 # Equo Recapito Forte tramite blockchain Ethereum
 
 ## Introduzione
+### Cosa è il non ripudio
 Il _non ripudio_ è una delle principali proprietà di sicurezza, la quale trova applicazione in numerosi contesti. Formalmente può essere definito come:
 
 > _Def:_ La disponibilità di un'evidenza inequivocabile che impedisca a un soggetto di negare le proprie azioni.
@@ -15,129 +16,122 @@ Chiaramente la semplice firma digitale non basta a garantire la proprietà. Deve
 
 Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.
 
-Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguarda la posta elettronica, con più precisione lo scambio di messaggi. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
+Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguarda la posta elettronica, con più precisione: lo scambio di messaggi. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
 
 - **Equo recapito debole**
     > _Def:_ Il ricevente legga il messaggio se e solo se il mittente riceva la ricevuta di ritorno.
 - **Equo recapito forte**
     > _Def:_ Il ricevente legga il messaggio, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
 
-## Obiettivi progetto
-Questo progetto ~~presenta~~ propone una variante del protocollo [Zhou\-Gollmann](https://conferences.computer.org/sp/pdfs/csf/1997/1997-zhou-efficient.pdf) ~~, proponendo uno~~ che sfrutta uno _Smart Contract_ ([Ethereum](https://ethereum.org/it/smart-contracts/)) per svolgere il ruolo di _Trusted Third Party_ (o TTP). 
-Oltre alla definizione del protocollo viene proposta anche un'implementazione in [Solidity](https://docs.soliditylang.org/en/v0.8.17/) dello _Smart Contract_ in questione (presentato) ~~ed un piccolo front end in React per interagire con lo Smart Contract~~. 
+### Obiettivi progetto
+Questo progetto propone una variante del protocollo [Zhou\-Gollmann](https://conferences.computer.org/sp/pdfs/csf/1997/1997-zhou-efficient.pdf), la quale sfrutta uno _Smart Contract_ ([Ethereum](https://ethereum.org/it/smart-contracts/)) per svolgere il ruolo di _Trusted Third Party_ (o TTP). 
+Oltre alla definizione del protocollo viene proposta anche un'implementazione in [Solidity](https://docs.soliditylang.org/en/v0.8.17/) dello _Smart Contract_ in questione. 
 
-~~Mediante lo _Smart Contract_~~ Il protocollo proposto si pone come obiettivo quello di permette ad un qualunque **mittente** ed ad un qualunque **destinatario** di scambiare messaggi sfruttando un qualunque mail provider, (un qualunque servizio per lo scambio di messaggi), ottenendo le seguenti proprietà si sicurezza.
+Il protocollo proposto si pone come obiettivo quello di garantire una serie di proprietà di sicurezza sui messaggi scambiati fra un qualunque **mittente** ed un qualunque **destinatario** sfruttando un qualunque servizio asincrono per lo scambio di messaggi.
 
-    ~~proprietà che vogliamo garantire : (1) equo recapito forte (2) nessuno è in grado di scoprire from, to ed msg (3) messuno scopre chi comunica con chi~~
+Le proprietà di sicurezza garantite sono le seguenti:
 
-**1. Equo recapito forte**.
-> Il ricevente è in grado di leggere la mail, ottenendo pure evidenza che viene dal mittente, se e solo se (contestualmente al fatto che) il mittente riceve la ricevuta di ritorno.
+    1. Equo recapito forte.
+    Il destinatario è in grado di leggere il messaggio, ottenendo pure evidenza che viene dal mittente, se e solo se (contestualmente al fatto che) il mittente riceve la ricevuta di ritorno.
 
-Il protocollo fornisce a mittente e ricevente le seguenti evidenze:
-- Se il mittente invia il messaggio, il ricevente ottiene l'evidenza che il messaggio è stato inviato dal mittente.
-- Se il ricevente legge il messaggio, il mittente ottiene l'evidenza che permette di dimostrare che il messaggio sia stato letto dal ricevente.
+    2. Integrità.
+    Il destinatario è in grado di verificare l'integrità del messaggio ricevuto.
 
-Inoltre, le evidenze sono ricevute contesualmente.
+    3. Autenticazione.
+    Il mittente ed il destinatario sono in grado di autenticare l'interlocutore.
 
-**2. Integrità**. 
-> Il ricevente è in grado di verificare l'integrità del messaggio ricevuto.
+    4. Confidenzialità sulla Blockchain.
+    Nessuno è in grado di determinare il contenuto del messaggio, così come l'identità del mittente e del destinatario essendo unicamente in possesso delle transazioni pubblicate sulla Blockchain.
 
-Il protocollo fornisce al riceve la certezza che il messaggio ricevuto sia quello che il mittente voleva spedire.
+## Descrizione Protocollo
 
-**3. Autenticazione (del ricevente con il mittente)**.
-> Il mittente riceve garanzia che il messaggio sia stato ricevuto dal corretto ricevente.
+### Notazione
 
-Il ricevente ottiene garazie riguarda l'idnetità del mittente grazie alla proprità $1$. Il protocollo fornisce le stesse garanzie al mittente riguardo l'identità del ricevente.
-
-~~Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).~~ Questo vale anche per la proprietà 1 può quindi essere specificato dopo
-
-**4. Confidenzialità sulla Blockchain**.
-> Nessuno è in grado di determinare il contenuto del messaggio, l'email del mittente e l'email del ricevente essendo in possesso unicamente delle transazioni pubblicate sulla Blockchain.
-
-La proprietà è garantita solo se il mittente e il ricevente non pubblichano ulteriori informazioni rispetto a quelle previste dal protocollo (in un qualsiasi posto).
-
---- 
-**TODO**
-5\. ~~Pseudo~~Anonimato sulla Blockchain. 
-Il protocollo fornisce una forma debole di anonimato. 
-Se mittente e ricevente utilizzan o una identitaà sulla blockchain differente per ogni messaggio inviato o ricevuto, allora il protocollo garantisce anonimato.
-Nessuno sia in grado di associare nessun indirizzo ethereum del ricevente alla sua email, così come per il destinatario. (ad eccezione di mittente e destinatario)
-(nessuno ed in grado di associare l'email del mittente e l'email del destinatario sulla blockchain)
-
----
-
-# Protocollo
-
-## Strumenti crittografici (Notazione)
-
-(chiarmente la qualità del protocollo ottenuto dipende anche dagli strumenti crittografici usati durante l'implemententazione, ma forse non serve specificarlo)
-
-Il protocollo utilizza i seguenti strumenti crittografici:
-- una funzione hash crittografica $H$ (crittograficamente sicura)
-    - $H(x)$ : applicazione della funzione hash $H$ con input $x$.
-- un cifrario simmetrico $C$
-    - $Enc_C(k,x)$ : cifratura del testo in chiaro $x$ con chiave $k$ 
+Per rappresentare i messaggi è il protocollo è usata la seguente notazoine:
+- $H$ = funzione hash crittograficamente sicura
+    - $H(x)$ : applicazione della funzione hash $H$ all'input $x$.
+- $C$ = cifrario simmetrico 
+    - $Enc_C(k,x)$ : cifratura del messaggio $x$ con chiave $k$ 
     - $Dec_C(k,y)$ : decifratura del crittotesto $y$ con chiave $k$
-- uno schema di firma $S$
-    - $Sign_A(x)$ : firma dell'agente $A$ sulla stringa $x$
-    - $Ver_A(s, x)$ : verifica della firma $s$ effettuata dall'agente $A$ sulla stringa $x$ 
-- $X, Y$ concatenazione del messaggio $X$ con il messaggio $Y$
-- $adddress_A$ : indirizzo ethereum di $A$ (un qualsiasi indirizzo di cui A conosce la chiave privata, una qualunque identità su ethereum di A, qualsiasi address per cui A può creare firme valide (conosce chiav eprivata))
+- $S$ = schema asimmetrico di firma 
+    - $Sign_A(x)$ : firma dell'agente $A$ sul messaggio $x$
+    - $Ver_A(s, x)$ : verifica della firma $s$ effettuata dall'agente $A$ sum messaggio $x$ 
+- $\{x, y\}$ : concatenazione del messaggio $x$ con il messaggio $y$
+- $addr_A$ : un qualunque indirizzo ethereum dell'agente $A$
 
-I flag descritti all'interno del protocollo Zhou\-Gollmann sono qua sostituiti da eventi emessi sulla blockchain.
+Al protocollo partecipano i seguenti agenti:
+- $A$ : mittente
+- $B$ : desinatario
+- $SC$ : smart contract
+
+Eventi
+- pubblica sulla blockchain
+- wait messaggio
 
 ## Descrizione protocollo
+Consideriamo il caso in cui $A$ vuole inviare un messaggo $m$ ad $B$ con _equo recapito forte_.
 
-Il protocollo si svolge fra due agenti, una agente A (mittente) ed un agente B (ricevente o destinatario) nello scenario in cui A e B vogliono scambiare un messaggio $msg$ con _equo recapito forte_.
+Per semplificare la lettura del protocollo sono usate le seguenti abbreviazioni:
+- $c = Enc_C(k,m)$
+- $NRO = sign_A(A,\ B,\ c,\ l,\ addr_A)$
+    - non repudation of origin
+- $NRR = sign_B(NRO) = sign_B(sign_A(A,\ B,\ c,\ l,\ addr_A))$
+    - non repudation of receive
+- $SUB\_K = sign_A(A,\ B,\ k,\ l,\ addr_A)$
+    - submission of key
 
-Il protocollo può essere riassunto nei seguenti passi.
+### 0. Recupero della label da utilizzare
+Il protocollo per collegare fra di loro differenti evidenze di uno stesso messaggio utilizza la coppia univoca $(l, addr_A)$ dove, $l$ è un contatore tenuto dallo SmartContract per ogni address. Il contatore in questione conta numero di messaggi inviati dal mittente utilizzando l'address $addr_A$ in cui è stato usato il protocollo.
 
-**1. Invio del messaggio $m$**
+Prima di poter iniziare il protocollo con il destinatario il mittente quindi prima ottenere quale è la prossima label. Per far questo deve contattare lo SmarContract.
 
->$A$ --> $B$ :
-    $A$, $B$, $encMsg$, $label$, $address_A$, $sign_A(A, B, encMsg, label)$
+È in questo momento del protocollo in cui il mittente decide quale sarà l'address che utilizzera per tutto il resto del protocollo.
 
-dove:
-- $encMsg$ = $Enc_{AES.CBC}(k, msg)$
-- $label$ = contatore restituito dallo Smart Contract
-- $address_A$ = indirizzio ethereum di A
+### 1. Invio del crittotesto a B
+È il mittente ad iniziare il protoccollo con il destinatario. L'invio deve avvenire mediante un canale sicuro, altrimenti la confidenzialità del messaggio non può essere garantita.
 
-indexed struct( label, A(msg.sender) ) sono univoci
+### 2. Pubblicazione del flag _nro_
+A invia al contratto 
+    keccak256(H( from, to, encMsg, label ))
+questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
+calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
 
-È il mittente ad iniziare il protoccollo con il destinatario. Il mittente (, sfruttando un qualsiasi canale di cominicazione, quale una mail, whatsapp, telegram, un foglio di carta, un messaggio normale, un qualsiasi canale di comunicazione). L'invio deve avvenire mediante un canale sicuro, altrimenti la confidenzialità del messaggio non può essere garantita.
-
-(A utilizza address_A)
-> A --> SmartContract :
-    $sign_A(A, B, encMsg, label)$
-    keccak256(H( A, B, encMsg, label, address_A ))
-
-    A invia al contratto 
-        keccak256(H( from, to, encMsg, label ))
-    questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
-    calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
-
-> SmartContract -> emit : 
-        indexed struct( label, A(msg.sender) )
-        $sign_A(A, B, encMsg, label)$
-        currentTimestamp
-
-> B -> SmartContract :
-        H( A, B, encMsg, label, address_A )
-        label
-        address_A
-        sign_B ( Fnro )
-
-dove Fnro = $sign_A(A, B, encMsg, label)$
-
+### 3. Conferma di ricezione del crittotesto da parte di B
 SmartContract controlla H( A, B, encMsg, label, address_A ) è determina l'autorizzazione a poter accettare il messaggio, dopo di che
-
-> Smart -> contract-> emit
-        indexed struct( label, A(msg.sender) )
-        sign_B ( Fnro )
-        currentTimestamp
 
 Lo SmartContract quindi emette sulla blockchain l'evento rappresentante il flag non ripudio di origine.
 
+### 4. Pubblicazione della chiave
+
+---
+
+## Il protocollo può essere riassunto dal seguente schema
+>0.1 &nbsp; $A \longrightarrow SC :$ &nbsp;
+    $addr_A$
+
+>0.2 &nbsp; $SC \longrightarrow A :$ &nbsp;
+    $l$
+
+>1\. &nbsp; $A \longrightarrow B :$ &nbsp; 
+    $A,\ B,\ c,\ l,\ addr_A,\ NRO$
+
+>2.1 &nbsp; $A \longrightarrow SC :$ &nbsp;
+    $NRO,\ keccak256(H(A,\ B,\ c,\ l,\ addr_A))$
+
+>2.2 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
+    $l,\ addr_A,\ NRO$
+
+>3.1 &nbsp; $B \longrightarrow SC :$ &nbsp;
+    $H(A,\ B,\ c,\ l,\ addr_A),\ l,\ addr_A,\ NRR$
+    
+>3.2 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
+    $l,\ addr_A,\ NRR$
+
+>4.1 &nbsp; $B \longrightarrow SC :$ &nbsp;
+    $k,\ l,\ addr_A,\ SUB\_K$
+    
+>4.2 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
+    $l,\ addr_A,\ k,\ SUB\_K$
 
 
 ---
@@ -223,3 +217,23 @@ Lo SmartContract quindi emette sulla blockchain l'evento rappresentante il flag 
         currentTimestamp
 
 # Analisi protocollo
+
+**1. Equo recapito forte**.
+Affinché questa proprietà sia soddisfatta devono dimostrare le seguenti condizioni:
+- Le evidenze sono ricevute contestualmente, in nessun momento ne mittente ne destinatario ha un vantaggio sull'altro agente.
+- Se il mittente invia il messaggio, il destinatario ottiene l'evidenza che il messaggio è stato inviato dal mittente.
+- Se il ricevente legge il messaggio, il mittente ottiene l'evidenza che permette di dimostrare che il messaggio sia stato letto dal ricevente.
+
+**2. Integrità**. 
+Il protocollo fornisce al riceve la certezza che il messaggio ricevuto sia quello che il mittente voleva spedire.
+
+**3. Autenticazione (del ricevente con il mittente)**.
+Dimostrare che sia mittente che ricevente hanno la certezza di chi sia l'interlocutore
+
+Il ricevente ottiene garazie riguarda l'idnetità del mittente grazie alla proprità $1$. Il protocollo fornisce le stesse garanzie al mittente riguardo l'identità del ricevente.
+
+~~Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).~~ Questo vale anche per la proprietà 1 può quindi essere specificato dopo
+
+**4. Confidenzialità sulla Blockchain**.
+
+La proprietà è garantita solo se il mittente e il ricevente non pubblichano ulteriori informazioni rispetto a quelle previste dal protocollo (in un qualsiasi posto).
