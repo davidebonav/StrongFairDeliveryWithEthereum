@@ -5,18 +5,21 @@
 
 ## Introduzione
 ### Cosa è il non ripudio
-Il _non ripudio_ è una delle principali proprietà di sicurezza, la quale trova applicazione in numerosi contesti. Formalmente può essere definito come:
+Il _non-ripudio_ è un'importante proprietà di sicurezza sempre più richiesta nei protocolli di sicurezza, la quale trova applicazione in numerosi contesti. Formalmente può essere definito come:
 
 > _Def:_ La disponibilità di un'evidenza inequivocabile che impedisca a un soggetto di negare le proprie azioni.
 
-Il non ripudio non è una misura preventiva, è una contromisura. Esso non impedisce l'atto di negare la partecipazione ad un'azione, ma fornisce l'evidenza che permette di dimostrare che in realtà l'azione è stata compiuta.
+> _Def:_ Assurance that the sender of information is provided with proof of delivery and the recipient is provided with proof of the sender’s identity, so neither can later deny having processed the information. [(NIST SP 800-18 Rev. 1)](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-18r1.pdf)
+
+Il non-ripudio non è una misura preventiva, è una contromisura. Questa proprietà non impedisce l'atto di negare la partecipazione ad un'azione, ma fornisce l'evidenza che permette di dimostrare che in realtà l'azione è stata compiuta.
 
 Nei protocolli di sicurezza che garantiscono questa proprietà l'evidenza deve necessariamente essere materiale crittografico, tipicamente ottenuto mediante la firma digitale.
-Chiaramente la semplice firma digitale non basta a garantire la proprietà. Deve essere il protocollo all'interno del quale viene usata a garantire che la proprietà di non ripudio valga.
+Chiaramente la semplice firma digitale non basta a garantirla. Deve essere il protocollo all'interno del quale viene usata a garantire che la proprietà di non-ripudio valga.
 
-Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.
+[comment]: <> (I protocolli più interessanti in cui questa proprietà vine e garantita sono quelli in cui viene garantita in modo equo a tutti i differenti agenti che vi partecipano.
+Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.)
 
-Fra le molteplici contestualizzazioni del non ripudio, lo scenario tipico riguarda la posta elettronica, con più precisione: lo scambio di messaggi. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
+Fra le molteplici contestualizzazioni del non-ripudio, lo scenario preso in considerazione riguarda lo scambio di messaggi. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
 
 - **Equo recapito debole**
     > _Def:_ Il ricevente legga il messaggio se e solo se il mittente riceva la ricevuta di ritorno.
@@ -82,13 +85,17 @@ Per semplificare la lettura del protocollo sono usate le seguenti abbreviazioni:
     - submission of key
 
 ### 0. Recupero della label da utilizzare
-Il protocollo per collegare fra di loro differenti evidenze di uno stesso messaggio utilizza la coppia univoca $(l, addr_A)$ dove, $l$ è un contatore tenuto dallo SmartContract per ogni address. Il contatore in questione conta numero di messaggi inviati dal mittente utilizzando l'address $addr_A$ in cui è stato usato il protocollo.
+Lo Smart Contract mantiene per ogni possibile _address_ un contatore. Ogni volta che un _address_ pubblica una nuova evidenza relativa ad un nuovo messaggio lo Smart Contract non fa altro che associare all'evidenza il valore corrente del contatore ed incrementarlo. Il contatore in questione conta numero di messaggi inviati dal mittente utilizzando l'address $addr_A$ in cui è stato usato il protocollo.
 
-Prima di poter iniziare il protocollo con il destinatario il mittente quindi prima ottenere quale è la prossima label. Per far questo deve contattare lo SmarContract.
+Pertanto, la coppia $(addr_A,\ l)$, dove $addr_A$ è l'address usato dal mittente per pubblicare la prima evidenza (il nro) mentre $l$ è il contatore associato dallo Snart Contract,  all'intenro del protocollo ha un duplice obiettivo:
+- Permettere di collegare fra di loro pezzi di evidenze differenti relative ad uno stesso messaggio
+- Permettere di identificare in modo univoco all'interno della blockchain tutte le evidenze pubblicare (permette di identificare univocamente tutte le catene di evidenze all'interno della blockchain.)
 
-È in questo momento del protocollo in cui il mittente decide quale sarà l'address che utilizzera per tutto il resto del protocollo.
+Per questo motivo, prima di iniziare il protocollo con il destinatario il mittente deve invocare lo Smart Contract per ottenere la label che sarà associata al messaggio. È in questo momento che il mittente decide l'address che userà per il resto0 del protocollo.
 
 ### 1. Invio del crittotesto a B
+Dopo aver ottenuto la prossima etichetta il mittente è pronto a comporre il messaggio da inviare al destinatario.
+
 È il mittente ad iniziare il protoccollo con il destinatario. L'invio deve avvenire mediante un canale sicuro, altrimenti la confidenzialità del messaggio non può essere garantita.
 
 B resta in ascolto su ( label, A(msg.sender) )
