@@ -85,26 +85,39 @@ Per semplificare la lettura del protocollo sono usate le seguenti abbreviazioni:
     - submission of key
 
 ### 0. Recupero della label da utilizzare
-Lo Smart Contract mantiene per ogni possibile _address_ un contatore. Ogni volta che un _address_ pubblica una nuova evidenza relativa ad un nuovo messaggio lo Smart Contract non fa altro che associare all'evidenza il valore corrente del contatore ed incrementarlo. Il contatore in questione conta numero di messaggi inviati dal mittente utilizzando l'address $addr_A$ in cui è stato usato il protocollo.
+La coppia $(addr_A,\ l)$, dove $addr_A$ è l'address usato dal mittente mentre $l$ è un'etichetta (univoca per address) scelta dallo Smart Contract, ha un duplice scopo:
+- Collegare fra di loro tutti i messaggi (e le evidenze) di una particolare esecuzione del protocollo.
+- Identificare in modo univoco all'interno della blockchain tutte le singole esecuzioni del protocollo.
 
-Pertanto, la coppia $(addr_A,\ l)$, dove $addr_A$ è l'address usato dal mittente per pubblicare la prima evidenza (il nro) mentre $l$ è il contatore associato dallo Snart Contract,  all'intenro del protocollo ha un duplice obiettivo:
-- Permettere di collegare fra di loro pezzi di evidenze differenti relative ad uno stesso messaggio
-- Permettere di identificare in modo univoco all'interno della blockchain tutte le evidenze pubblicare (permette di identificare univocamente tutte le catene di evidenze all'interno della blockchain.)
+L'etichetta è univoca per _address_, ovvero lo Smart Contract può assegnare etichette identiche ad address differenti, mentre ad ogni _address_ ogni etichetta è assegnata in una ed una sola esecuzione. 
+Ovvero, esecuzioni differenti da parte di _address_ differenti possono avere la stessa etichetta, mentre esecuzioni differenti da parte dello stesso _address_ hanno sempre etichette differenti.
 
-Per questo motivo, prima di iniziare il protocollo con il destinatario il mittente deve invocare lo Smart Contract per ottenere la label che sarà associata al messaggio. È in questo momento che il mittente decide l'address che userà per il resto0 del protocollo.
+Prima di poter iniziare il protocollo vero e proprio il mittente deve quindi interrogare lo Smart Contract per conoscere l'etichetta che gli sarà associata all'address da lui scelto. Per ottenere la corretta label da associare all'esecuzione del protocollo. In modo da poterla comunicare anche al destinatario. 
+Questo avviene mediante il seguente scambio di messaggi.
+
+>0.1 &nbsp; $A \longrightarrow SC :$ &nbsp;
+    $addr_A$
+
+>0.2 &nbsp; $SC \longrightarrow A :$ &nbsp;
+    $[addr_A],\ l$
+
+L'_address_ scelto in questa fase rimarrà lo stesso per tutta la restante esecuzione del protocollo.
 
 ### 1. Invio del crittotesto a B
-Dopo aver ottenuto la prossima etichetta il mittente è pronto a comporre il messaggio da inviare al destinatario.
+Una volta ottenuta l'etichetta dallo Smart Contract il mittente genera randomicamente una chiave simmetrica $k$, e la usa per produrre il seguente crittotesto &nbsp;$c = Enc_C(k,m)$. 
 
-È il mittente ad iniziare il protoccollo con il destinatario. L'invio deve avvenire mediante un canale sicuro, altrimenti la confidenzialità del messaggio non può essere garantita.
+Dopo di ché, sfruttanto il servizio di messaggistica asincrona invia il seguetne messaggio al destinatario.
+>1\. &nbsp; $A \longrightarrow B :$ &nbsp; 
+    $A,\ B,\ c,\ l,\ addr_A,\ NRO$
+
+Se vogliamo che la confidenzialità sia garantita anche fuori la blockchain occorre che l'invio avvenga mediante un canale sicuro.
 
 B resta in ascolto su ( label, A(msg.sender) )
 
 ### 2. Pubblicazione del flag _nro_
-A invia al contratto 
-    keccak256(H( from, to, encMsg, label ))
-questo permette poi al contratto di determinare se chi cerca di emettere un certo evento è autorizzato a farlo o meno. Solo B che è in grado di 
-calcolare H( from, to, encMsg, label ) è quello che può emettere questo evento.
+Il mittente invia quindi allo Smart Contract l'evidenza da pubblicare ed hash. L'hash permette allo Smart Contract di determinare chi è autorizzato a pubblicare la succesisva evidenza (a rispondere). Solo chi conosce l'input è autorizzato a farlo. Solo il corretto destinatario del messaggio è in grado di calcolare l'input.
+
+(da rimuovere dalla definizione del protocollo e da mettere solo nell'implementazione, è inutile pensandoci bene) oppure da sostituire con una nonce, ma non serve... da ragionarci
 
 A resta in ascolto su ( label, A(msg.sender) )
 
