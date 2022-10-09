@@ -5,21 +5,18 @@
 
 ## Introduzione
 ### Cosa è il non ripudio
-Il _non-ripudio_ è un'importante proprietà di sicurezza sempre più richiesta nei (dai) protocolli di sicurezza, la quale trova applicazione in numerosi contesti. Formalmente può essere definito come:
+Il _non-ripudio_ è un'importante proprietà di sicurezza sempre più richiesta dai protocolli di sicurezza. Formalmente può essere definito come:
 
 > _Def:_ La disponibilità di un'evidenza inequivocabile che impedisca a un soggetto di negare le proprie azioni.
 
 > _Def:_ Assurance that the sender of information is provided with proof of delivery and the recipient is provided with proof of the sender’s identity, so neither can later deny having processed the information. [(NIST SP 800-18 Rev. 1)](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-18r1.pdf)
 
-Il non-ripudio non è una misura preventiva, è una contromisura. Questa proprietà non impedisce l'atto di negare la partecipazione ad un'azione, ma fornisce l'evidenza che permette di dimostrare che in realtà l'azione è stata compiuta.
+Il non-ripudio non è una misura preventiva, esso è una contromisura. Questa proprietà non impedisce l'atto di negare la partecipazione ad un'azione, ma fornisce l'evidenza che permette di dimostrare che in realtà l'azione è stata compiuta.
 
 Nei protocolli di sicurezza che garantiscono questa proprietà l'evidenza deve necessariamente essere materiale crittografico, tipicamente ottenuto mediante la firma digitale.
 Chiaramente la semplice firma digitale non basta a garantirla. Deve essere il protocollo all'interno del quale viene usata a garantire che la proprietà di non-ripudio valga.
 
-[comment]: <> (I protocolli più interessanti in cui questa proprietà vine e garantita sono quelli in cui viene garantita in modo equo a tutti i differenti agenti che vi partecipano.
-Il non ripudio deve essere garantito in modo equo a tutti i differenti agenti che partecipano al protocollo. Inoltre, in nessun momento nessun agente deve avere un vantaggio sugli altri partecipanti.)
-
-Fra le molteplici contestualizzazioni del non-ripudio, lo scenario preso in considerazione riguarda lo scambio di messaggi. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
+Fra le molteplici contestualizzazioni del non-ripudio, lo scenario preso in considerazione riguarda lo scambio di messaggi o equo recapito. Nel caso del non ripudio per lo scambio di messaggi possiamo distinguere due differenti livelli (incarnazioni) di questa proprietà:
 
 - **Equo recapito debole**
     > _Def:_ Il ricevente legga il messaggio se e solo se il mittente riceva la ricevuta di ritorno.
@@ -27,21 +24,21 @@ Fra le molteplici contestualizzazioni del non-ripudio, lo scenario preso in cons
     > _Def:_ Il ricevente legga il messaggio, ottenendo pure evidenza che provenga dal mittente, se e solo se il mittente riceva la ricevuta di ritorno.
 
 ### Obiettivi progetto
-Questo progetto propone una variante del protocollo [Zhou\-Gollmann](https://conferences.computer.org/sp/pdfs/csf/1997/1997-zhou-efficient.pdf) (??per il non ripudio nell'equo scambio di messaggi??), la quale sfrutta uno _Smart Contract_ ([Ethereum](https://ethereum.org/it/smart-contracts/)) per svolgere il ruolo di _Trusted Third Party_ (o TTP). 
+Questo progetto propone una variante del protocollo [Zhou\-Gollmann](https://conferences.computer.org/sp/pdfs/csf/1997/1997-zhou-efficient.pdf). Il protocollo proposto sfrutta uno _Smart Contract_ ([Ethereum](https://ethereum.org/it/smart-contracts/)) per svolgere il ruolo di _Trusted Third Party_ (o TTP) e per garantire al mittente ed al destinatario di un messaggio l'equo recapito forte.
 Oltre alla definizione del protocollo viene proposta anche un'implementazione in [Solidity](https://docs.soliditylang.org/en/v0.8.17/) dello _Smart Contract_ in questione. 
 
-Il protocollo proposto si pone come obiettivo quello di garantire una serie di proprietà di sicurezza sui messaggi scambiati fra un qualunque **mittente** ed un qualunque **destinatario** sfruttando un qualunque servizio asincrono per lo scambio di messaggi.
+Il protocollo si pone come obiettivo quello di garantire una serie di proprietà di sicurezza sui messaggi scambiati fra un qualunque **mittente** ed un qualunque **destinatario** che sfruttando un qualunque servizio asincrono per lo scambio di messaggi.
 
 Le proprietà di sicurezza garantite sono le seguenti:
 
     1. Equo recapito forte.
-    Il destinatario è in grado di leggere il messaggio, ottenendo pure evidenza che viene dal mittente, se e solo se (contestualmente al fatto che) il mittente riceve la ricevuta di ritorno.
+    Il destinatario è in grado di leggere il messaggio, ottenendo pure evidenza che viene dal mittente, contestualmente al fatto che il mittente riceve la ricevuta di ritorno.
 
     2. Integrità.
     Il destinatario è in grado di verificare l'integrità del messaggio ricevuto.
 
     3. Autenticazione.
-    Il mittente ed il destinatario sono in grado di autenticare l'interlocutore.
+    Il mittente ed il destinatario sono in grado di autenticare l'interlocutore (di autenticarsi reciprocamente).
 
     4. Confidenzialità sulla Blockchain.
     Nessuno è in grado di determinare il contenuto del messaggio, così come l'identità del mittente e del destinatario essendo unicamente in possesso delle transazioni pubblicate sulla Blockchain.
@@ -49,16 +46,17 @@ Le proprietà di sicurezza garantite sono le seguenti:
 ## Descrizione Protocollo
 
 ### Notazione
+Durante la trattazione del protocollo indiciamo con $A$ il mittente del messagio, con $B$ il destinatario del messaggio e con $SC$ lo SmartContract che volge il ruolo di TTP.
+<!-- Al protocollo partecipano i seguenti agenti: -->
+<!-- - Il mittente, rappresentato con la lettera $A$. -->
+<!-- - Il destinatario, rappresentato con la lettera $B$. -->
+<!-- - Lo Smart Contract che svolge il ruolo di TPP, rappresentato con $SC$ -->
+
 
 Il protocollo utilizza i seguenti strumenti crittografici 
 <!-- esterni a quelli forniti dalla blockchain. -->
 - un cifrario simmetrico $C$ 
 - uno schema asimmetrico di firma digitale $S$
-
-Al protocollo partecipano i seguenti agenti:
-- Il mittente, rappresentato con la lettera $A$.
-- Il destinatario, rappresentato con la lettera $B$.
-- Lo Smart Contract che svolge il ruolo di TPP, rappresentato con $SC$
 
 La notazione utilizzata durante la descrizione del protocollo è la seguente:
 - $Enc_C(k,m)$ : cifratura del messaggio $m$ con la chiave $k$ utilizzando $C$.
@@ -69,43 +67,43 @@ La notazione utilizzata durante la descrizione del protocollo è la seguente:
 - $N_X$ nonce generata randomicamente dall'agente $X$
 - $m_1, m_2$ : concatenazione del messaggio $m_1$ con il messaggio $m_2$
 - $addr_X$ : un qualunque indirizzo ethereum dell'agente $X$ scelto in modo arbitrario.
-- $SM \longrightarrow Blockchain :\ m$ &nbsp; intendiamo il pubblicamento da parte dello SmartContract sulla blockchain del log contentente il messaggio $m$. (evento di pubblicazione)
-- $X \longleftarrow Blockchain :\ m$ l'agente $X$ recupera il log dalla Blockchain contentente il messaggio $m$.
-    - azione dell'agente $X$ di aspettare la pubbblicazione (e conferma) del messaggio $m$ sui log della blockchain da parte dello Smart Contract. (evento di wait)
+- $SM \longrightarrow Blockchain :\ m$ &nbsp; : pubblicazione del log contenente il messaggio $m$ da parte dello SmartContract sulla Blockchain.
+- $X \longleftarrow Blockchain :\ m$ &nbsp; : recupero dalla Blockchain del log contenente il messaggio $m$ da parte dell'agente $X$.
+    - $X$ aspetta la pubblicazione di $m$ sui log della Blockchain da parte dello Smart Contract.
 
 ## Descrizione protocollo
-Consideriamo il caso in cui $A$ vuole inviare un messaggo $m$ ad $B$ con _equo recapito forte_ (e con le proprietù descritte sopra). Per far questo genera una chiave $k$ e cifra il messaggio, ottenendo il crittotesto $c$
+Consideriamo il caso in cui $A$ vuole inviare un messaggo $m$ ad $B$ con _equo recapito forte_ (e con le proprietà descritte sopra). Per far questo genera una chiave $k$ e cifra il messaggio, ottenendo il crittotesto $c$
 
 Per semplificare la lettura del protocollo sono usate le seguenti abbreviazioni:
 - $c = Enc_C(k,m)$
 - $NRO = sign_A(A,\ B,\ c,\ l,\ addr_A)$
-    - non repudation of origin
+    - non repudiation of origin
 - $NRR = sign_B(NRO) = sign_B(sign_A(A,\ B,\ c,\ l,\ addr_A))$
-    - non repudation of receive
-- $SUB\_K = sign_A(A,\ B,\ k,\ l,\ addr_A)$
-    - submission of key
+    - non repudiation of receipt
+- $ConK = sign_A(A,\ B,\ k,\ l,\ addr_A)$
+    - confirmation of key
 
-Il protocollo presuppone che tutte le comunicazioni avvengano mediante un canale sicuro? Le transazioni verso e da la Blockchain sono firmate?
-
-### 0. Recupero della label da utilizzare
+<!-- Il protocollo presuppone che tutte le comunicazioni avvengano mediante un canale sicuro? Le transazioni verso e da la Blockchain sono firmate? -->
+---
+**0. Recupero della label da utilizzare**
 >0.1 &nbsp; $A \longrightarrow SC :$ &nbsp;
     $addr_A$
 
 >0.2 &nbsp; $SC \longrightarrow A :$ &nbsp;
     $l$
 
-### 1. Invio del crittotesto a B
+**1. Invio del crittotesto al destinatario**
 >1\. &nbsp; $A \longrightarrow B :$ &nbsp; 
-    $A,\ B,\ c,\ l,\ addr_A,\ NRO,\ N_A$
+    $A,\ B,\ c,\ l,\ addr_A,\ N_A$
 
-### 2. Pubblicazione del flag _nro_
+**2. Pubblicazione del flag _nro_**
 >2.1 &nbsp; $A \longrightarrow SC :$ &nbsp;
-    $NRO,\ keccak256(N_A)$
+    $l,\ addr_A,\ NRO,\ keccak256(N_A)$
 
 >2.2 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ NRO$
 
-### 3. Conferma di ricezione del crittotesto da parte di B
+**3. Conferma di ricezione del crittotesto da parte del destinatario**
 >3.1 &nbsp; $B \longleftarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ NRO$
 
@@ -119,57 +117,37 @@ Il protocollo presuppone che tutte le comunicazioni avvengano mediante un canale
 >4.1 &nbsp; $A \longleftarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ NRR$
 
->4.2 &nbsp; $B \longrightarrow SC :$ &nbsp;
-    $k,\ l,\ addr_A,\ SUB\_K$
+>4.2 &nbsp; $A \longrightarrow SC :$ &nbsp;
+    $k,\ l,\ addr_A,\ ConK$
     
 >4.3 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
-    $l,\ addr_A,\ k,\ SUB\_K$
+    $l,\ addr_A,\ k,\ ConK$
 
 ### 5. Confirmation della chiave
 >5\. &nbsp; $B \longleftarrow Blockchain :$ &nbsp;
-    $l,\ addr_A,\ k,\ SUB\_K$
+    $l,\ addr_A,\ k,\ ConK$
+---
 
-eventualmente $N_A = H(A,\ B,\ c,\ l,\ addr_A)$ con
-- una funzione hash crittograficamente sicura $H$
-- $H(m)$ : applicazione della funzione hash $H$ al messaggio $m$.
+La nonce $N_A$ può essere calcolata dal mittente anche come $N_A = H(A,\ B,\ c,\ l,\ addr_A)$ dove
+- $H$ è una funzione hash crittograficamente sicura
+- $H(m)$ : è l'applicazione della funzione hash $H$ al messaggio $m$.
 
-### 0. Recupero della label da utilizzare
-La coppia $(addr_A,\ l)$, dove $addr_A$ è l'address usato dal mittente mentre $l$ è un'etichetta (univoca per address) scelta dallo Smart Contract, ha un duplice scopo:
-- Collegare fra di loro tutti i messaggi (e le evidenze) di una particolare esecuzione del protocollo.
-- Identificare in modo univoco all'interno della blockchain tutte le singole esecuzioni del protocollo (e tutte le evidenze pubblicate appartenenti all'esecuzione).
+La coppia $(addr_A,\ l)$, dove $addr_A$ è l'address usato dal mittente mentre $l$ è un'etichetta (univoca per address) generata dallo Smart Contract, ha un duplice scopo:
+- Collegare fra di loro tutte le evidenze di una particolare esecuzione del protocollo.
+- Identificare in modo univoco all'interno della blockchain tutte le singole esecuzioni del protocollo e le evidenze associate.
 
-L'etichetta è univoca per _address_, ovvero lo Smart Contract può assegnare etichette identiche ad address differenti, mentre ad ogni _address_ ogni etichetta è assegnata in una ed una sola esecuzione. 
+L'etichetta è univoca per _address_, ovvero lo Smart Contract può assegnare etichette identiche ad address differenti, mentre ad ogni _address_ ogni etichetta è generata in una ed una sola esecuzione. 
 Ovvero, esecuzioni differenti da parte di _address_ differenti possono avere la stessa etichetta, mentre esecuzioni differenti da parte dello stesso _address_ hanno sempre etichette differenti.
 
-Prima di poter iniziare il protocollo vero e proprio il mittente deve quindi interrogare lo Smart Contract per conoscere l'etichetta che gli sarà associata all'address da lui scelto. Per ottenere la corretta label da associare all'esecuzione del protocollo. In modo da poterla comunicare anche al destinatario. 
-Questo avviene mediante il seguente scambio di messaggi.
+Durante lo **step 0**, prima di poter iniziare il protocollo vero e proprio il mittente deve quindi interrogare lo Smart Contract per conoscere l'etichetta che sarà generata per l'_address_ scelto. <!-- Per ottenere la corretta label da associare all'esecuzione del protocollo. In modo da poterla comunicare anche al destinatario.  --> L'_address_ scelto in questa fase rimarrà lo stesso per tutta la restante esecuzione del protocollo.
 
-L'_address_ scelto in questa fase rimarrà lo stesso per tutta la restante esecuzione del protocollo.
+Dopo aver ottenuto l'etichetta $l$ dallo SmartContract il mittente è pronto ad inviare il crittotesto del messaggio al destinatario. 
+Il servizio usato per lo scambio del messaggio durante lo **step 1** fra mittente e destinatario occorre garantisca confidenzialità. L'invio deve avvenire mediante un canale sicuro. (Non necessario)
 
-### 1. Invio del crittotesto a B
-Una volta ottenuta l'etichetta dallo Smart Contract il mittente genera randomicamente una chiave simmetrica $k$, e la usa per produrre il seguente crittotesto &nbsp;$c = Enc_C(k,m)$. 
+La nonce generata dal mittente ha lo scopo di permettere allo Smart Contract di autenticare $B$ come il corretto destinatario del messaggio inviato da $A$. Solo $B$ essendo il corretto destinatario del messaggio conosce l'input in grado di generare l'hash. Questo evita che chiunque possa pubblicare il flag $NRR$ al posto di $B$.
+Affinché questo sia vero occorre però che il messaggio $1$ sia confidenziale. 
 
-Dopo di ché, sfruttanto il servizio di messaggistica asincrona invia il seguetne messaggio al destinatario.
-
-Se vogliamo che la confidenzialità sia garantita anche fuori la blockchain occorre che l'invio avvenga mediante un canale sicuro.
-
-La nonce generata da A ed inviata a B ed allo Smart Contract permette allo Smart Contract di autenticare B come il corretto destinatario del messaggio. B si autentica successivamente come il ricevente mostrando NA allo smartcontract.
-
-### 2. Pubblicazione del flag _nro_
-Il mittente invia quindi allo Smart Contract l'evidenza da pubblicare ed hash. L'hash permette allo Smart Contract di determinare chi è autorizzato a pubblicare la succesisva evidenza (a rispondere). Solo chi conosce l'input è autorizzato a farlo. Solo il corretto destinatario del messaggio è in grado di calcolare l'input.
-
-(da rimuovere dalla definizione del protocollo e da mettere solo nell'implementazione, è inutile pensandoci bene) oppure da sostituire con una nonce, ma non serve... da ragionarci
-
-A resta in ascolto su ( label, A(msg.sender) )
-
-### 3. Conferma di ricezione del crittotesto da parte di B
-SmartContract controlla H( A, B, encMsg, label, address_A ) è determina l'autorizzazione a poter accettare il messaggio, dopo di che
-
-Lo SmartContract quindi emette sulla blockchain l'evento rappresentante il flag non ripudio di origine.
-
-### 4. Pubblicazione della chiave
-
----
+A questo punto $B$ dopo aver recuperato i log contenente l'evidenza $NRO$ nel passo **3.1** (ed averne verificato la correttezza) decide se procedere con il protocollo e quindi pubblicare la successiva o meno.
 
 ## Analisi protocollo
 
