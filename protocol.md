@@ -113,7 +113,7 @@ Per semplificare la lettura del protocollo sono usate le seguenti abbreviazioni:
 >3.3 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ NRR$
 
-### 4. Pubblicazione della chiave
+**4. Pubblicazione della chiave**
 >4.1 &nbsp; $A \longleftarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ NRR$
 
@@ -123,7 +123,7 @@ Per semplificare la lettura del protocollo sono usate le seguenti abbreviazioni:
 >4.3 &nbsp; $SC \longrightarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ k,\ ConK$
 
-### 5. Confirmation della chiave
+**5. Confirmation della chiave**
 >5\. &nbsp; $B \longleftarrow Blockchain :$ &nbsp;
     $l,\ addr_A,\ k,\ ConK$
 ---
