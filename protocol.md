@@ -150,25 +150,26 @@ Affinché questo sia vero occorre però che il messaggio $1$ sia confidenziale.
 A questo punto $B$ dopo aver recuperato i log contenente l'evidenza $NRO$ nel passo **3.1** (ed averne verificato la correttezza) decide se procedere con il protocollo e quindi pubblicare la successiva o meno.
 
 ## Analisi protocollo
+Affinché le proprietà prima elencate siano soddisfatte dal protocollo occorre supporre l'esistenza di una _Public Key Infrastructure_ (PKI). Grazie alla PKI sia mittente che destinatario sono in grado, sia di verificare l'identità dell'interlocutore, che di associarvi la corretta chiave pubblica per la verifica delle firme digitali ricevute.
+
+---
+
+Durante l'analisi del protocollo le dimostrazioni effettuate sono effettuate in modo informale.
 
 **1. Equo recapito forte**.
-Affinché questa proprietà sia soddisfatta devono dimostrare le seguenti condizioni:
-- Le evidenze sono ricevute contestualmente, in nessun momento ne mittente ne destinatario ha un vantaggio sull'altro agente.
-- Se il mittente invia il messaggio, il destinatario ottiene l'evidenza che il messaggio è stato inviato dal mittente.
-- Se il ricevente legge il messaggio, il mittente ottiene l'evidenza che permette di dimostrare che il messaggio sia stato letto dal ricevente.
+Affinché questa prima proprietà valga (sia garantita dal protocollo) occorre che le seguenti affermazioni siano vere:
+1. Le evidenze sono consolidate contestualmente sia per mittente che per destinatario, in nessun momento ne mittente ne destinatario ha un vantaggio sull'altro agente.
+2. Se il mittente invia il messaggio, il destinatario ottiene l'evidenza che il messaggio è stato inviato dal mittente.
+3. Se il ricevente legge il messaggio, il mittente ottiene l'evidenza che permette di dimostrare che il messaggio sia stato letto dal ricevente.
 
-**2. Integrità**. 
-Il protocollo fornisce al riceve la certezza che il messaggio ricevuto sia quello che il mittente voleva spedire.
+La prima affermazione è vera per lo stesso motivo per cui è vera nel protocollo di Zhou\-Gollmann. 
+La seconda e la terza affermazione in vece sono vere sia grazie allo stesso motivo per cui sono vere all'intenro del protocollo di Zhou\-Gollmann, sia grazie alla presenza della PKI che permette di verificare l'identità degli agenti.
 
-**3. Autenticazione (del ricevente con il mittente)**.
-Dimostrare che sia mittente che ricevente hanno la certezza di chi sia l'interlocutore
+**3. Integrità**
+L'integrità del messaggio inviato da $A$ a $B$ è garantita sia dalla firma $NRO$ effettuata da $A$ sul crittotesto, sia dalla firma $ConK$ effettuata da $A$ sulla chiave di decifrazione.
 
-Il ricevente ottiene garazie riguarda l'idnetità del mittente grazie alla proprità $1$. Il protocollo fornisce le stesse garanzie al mittente riguardo l'identità del ricevente.
-
-~~Affinché questa proprietà sia soddisfatta il protocollo presuppone l'esistenza di una _Public Key Infrastructure_ (PKI).~~ Questo vale anche per la proprietà 1 può quindi essere specificato dopo
-
-Disponibilità di una PKI, ogni agente possiede una coppia di chiavi di firma. Questo permette agli agenti di avere la certezza di chi l'interlocutore sia.
+**3. Autenticazione**.
+Sia mittente che destinatario sono in grado di verificare l'identità dell'interlocutore grazie alla presenza della PKI.
 
 **4. Confidenzialità sulla Blockchain**.
-
-La proprietà è garantita solo se il mittente e il ricevente non pubblichano ulteriori informazioni rispetto a quelle previste dal protocollo (in un qualsiasi posto).
+Anche se sulla Blochckain viene pubblicamente pubblicata la chiave di decifratura del messaggio da $A$, non viene mai pubblicato anche il crittotesto, ma solo una serie di crittotesti di firme digitali. A partire da queste informazioini presenti sulla Blockchain nessuno è in grado di ottenere il messaggio $m$.
