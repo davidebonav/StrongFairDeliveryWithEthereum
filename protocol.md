@@ -154,22 +154,24 @@ Affinché le proprietà prima elencate siano soddisfatte dal protocollo occorre 
 
 ---
 
-Durante l'analisi del protocollo le dimostrazioni effettuate sono effettuate in modo informale.
+Durante l'analisi del protocollo le dimostrazioni sono effettuate in modo informale.
 
 **1. Equo recapito forte**.
-Affinché questa prima proprietà valga (sia garantita dal protocollo) occorre che le seguenti affermazioni siano vere:
+Affinché questa prima proprietà sia garantita dal protocollo occorre che le seguenti affermazioni siano vere:
 1. Le evidenze sono consolidate contestualmente sia per mittente che per destinatario, in nessun momento ne mittente ne destinatario ha un vantaggio sull'altro agente.
 2. Se il mittente invia il messaggio, il destinatario ottiene l'evidenza che il messaggio è stato inviato dal mittente.
 3. Se il ricevente legge il messaggio, il mittente ottiene l'evidenza che permette di dimostrare che il messaggio sia stato letto dal ricevente.
 
-La prima affermazione è vera per lo stesso motivo per cui è vera nel protocollo di Zhou\-Gollmann. 
-La seconda e la terza affermazione in vece sono vere sia grazie allo stesso motivo per cui sono vere all'intenro del protocollo di Zhou\-Gollmann, sia grazie alla presenza della PKI che permette di verificare l'identità degli agenti.
+La prima affermazione è vera per lo stesso motivo per cui è vera nel protocollo di Zhou\-Gollmann.
+La seconda e la terza affermazione sono invece vere anche grazzie alla presenza della PKI che permette sia al mittente che al destinatario di verificare l'identità dell'interlocutore.
 
 **3. Integrità**
-L'integrità del messaggio inviato da $A$ a $B$ è garantita sia dalla firma $NRO$ effettuata da $A$ sul crittotesto, sia dalla firma $ConK$ effettuata da $A$ sulla chiave di decifrazione.
+L'integrità del messaggio $m$ inviato da $A$ a $B$ è garantita sia dalle firme digitali $NRO$ e $ConK$ effettuate da $A$ rispettivamente sul crittotesto e sulla chiave di decifrazione.
 
 **3. Autenticazione**.
 Sia mittente che destinatario sono in grado di verificare l'identità dell'interlocutore grazie alla presenza della PKI.
 
 **4. Confidenzialità sulla Blockchain**.
-Anche se sulla Blochckain viene pubblicamente pubblicata la chiave di decifratura del messaggio da $A$, non viene mai pubblicato anche il crittotesto, ma solo una serie di crittotesti di firme digitali. A partire da queste informazioini presenti sulla Blockchain nessuno è in grado di ottenere il messaggio $m$.
+La chiave di decifratura viene pubblicata dal mittente in chiaro sulla Blockchain.
+Sulla Blockchain oltre alla chiave vengono pubblicati unicamente una serie di crittotesti i quali costituiscono le varie evidenze per mittente e destinatario.
+Anche se le informazioni pubblicate sulla Blockchain sono pubblicamente accessibili ciò non rappresneta un problema, nessuno è in grado di determinare il contenuto del messaggio $m$ unicamente tramite le informazioni pubblicate sulla Blockchain.
