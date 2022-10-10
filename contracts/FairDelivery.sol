@@ -16,8 +16,11 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
     uint256 private constant MAX_INT = 2**256 - 1;
     
     // -- Attributes --
-    /// @inheritdoc IFairDelivery
-    mapping(address => uint256) public override currentLabel;
+    /**
+     * @inheritdoc IFairDelivery
+     */
+    mapping(address => uint256) public override getNextLabel;
+
     mapping(address => mapping(uint256 => StateData))
         private currentMessageState;
 
@@ -44,7 +47,7 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
         _;
     }
 
-    modifier authorizedAddress(address sender_address, Hash proof, uint256 label) {
+    modifier authorizedAddress(address sender_address, Nonce nonce, uint256 label) {
         bytes32 expectedHash = currentMessageState[sender_address][label].proofToDo;
         bytes32 currentHash = keccak256(abi.encode(proof));
 
