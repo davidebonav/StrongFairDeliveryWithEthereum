@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
+/**
+ * @title An Interface  for fair strong delivery.
+ * @author Davide Bonaventura
+ * @notice This interface exposes all the methods, events and errors that a Smart Contract who wants to implement the non-repudiation protocol must have.
+ */
 interface IFairDelivery {
-    /**
-     * @title A Smart Contract for fair strong delivery
-     * @author Davide Bonaventura
-     * @notice This Smart Contract allows you to obtain non-repudiation property for all messages exchanged using any service for the exchange of messages (like email, whatsapp, telegram, paper, ...).
-     */
-
     // -- TYPES --
     type Nonce is uint256;
     type Signature is uint256;
