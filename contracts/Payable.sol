@@ -5,14 +5,14 @@ pragma solidity ^0.8.0;
 import "./Ownable.sol";
 
 /**
- * @notice Contract module which provides a mechanism to make some methods of the contract payable.
- * @dev This contract is Ownable.
+ * @dev Contract module which provides a mechanism to make some methods of the contract payable.
+ * This contract is Ownable.
  */
 contract Payable is Ownable {
 
     /**
-     * @notice Return the value of the minimum fee.
-     * @dev The value is returned in wei.
+     * @dev Return the value of the minimum fee.
+     * The value is returned in wei.
      * @return minimumFee Return the minimum fee
      */
     uint256 public minimumFee;
@@ -21,16 +21,16 @@ contract Payable is Ownable {
     error NotEnoughBalance(string description, uint256 currentBalance);
 
     /**
-     * @notice This event Notifies that the contract has received some currency.
-     * @dev The value is in wei.
+     * @dev This event Notifies that the contract has received some currency.
+     * The value is in wei.
      * @param from Address that have send the currency.
      * @param value The amount of currency received.
      */
     event Received(address indexed from, uint value);
 
     /**
-     * @notice Check if the method caller has sent enough currency.
-     * @dev Throws if the currency sent is less than the minimum fee.
+     * @dev Check if the method caller has sent enough currency.
+     * Throws if the currency sent is less than the minimum fee.
      */
     modifier enoughFee {
         if(minimumFee < _msgValue())
@@ -39,8 +39,8 @@ contract Payable is Ownable {
     }
 
     /**
-     * @notice Check if the contract has enough balance over a certain amount.
-     * @dev Throws if the amount requested is greater than the balance of the contract.
+     * @dev Check if the contract has enough balance over a certain amount.
+     * Throws if the amount requested is greater than the balance of the contract.
      * @param amount The amount to check.
      */
     modifier enoughBalance(uint256 amount) {
@@ -50,16 +50,16 @@ contract Payable is Ownable {
     }
 
     /**
-     * @notice This is the constructor of the contract.
-     * @dev Initializes the contract setting the minimum fee of the payable methods.
+     * @dev This is the constructor of the contract.
+     * Initializes the contract setting the minimum fee of the payable methods.
      */
     constructor(uint256 _minimumFee) {
         setMinimumFee(_minimumFee);
     }
 
     /**
-     * @notice Allows to change the minimum fee required by the payable methods.
-     * @dev Only the owner of the contract can call this method.
+     * @dev Allows to change the minimum fee required by the payable methods.
+     * Only the owner of the contract can call this method.
      * @param newFee The new minimum fee.
      */
     function setMinimumFee(uint256 newFee) public onlyOwner {
@@ -67,8 +67,8 @@ contract Payable is Ownable {
     }
 
     /**
-     * @notice Allows the contract owner to pay a certain amount to a certain address.
-     * @dev Only the owner of the contract can call this method. The balance must be less than the amount to be paid.
+     * @dev Allows the contract owner to pay a certain amount to a certain address.
+     * Only the owner of the contract can call this method. The balance must be less than the amount to be paid.
      * @param to The address to which to pay the amount
      * @param amount The amount to be paid.
      * @param flag This parameter must be set to true for the payment to be executed. If set to false the payment is cancelled.
@@ -79,8 +79,8 @@ contract Payable is Ownable {
     }
 
     /**
-     * @notice Allows the contract to pay a certain amount to the owner.
-     * @dev This metod call the payTo method with the to param equals to the owner. Therefore, only the owner of the contract can call this method. The method is external, cannot be invoked internally in the contract.
+     * @dev Allows the contract to pay a certain amount to the owner.
+     * This metod call the payTo method with the to param equals to the owner. Therefore, only the owner of the contract can call this method. The method is external, cannot be invoked internally in the contract.
      * @param amount The amount to be paid.
      */
     function payToOwner(uint256 amount) external { 

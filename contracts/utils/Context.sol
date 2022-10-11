@@ -12,15 +12,15 @@ pragma solidity ^0.8.0;
  */
 abstract contract Context {
     /**
-     * @notice Return the address of the message sender
-     * @return senderAddress Message sender address.
+     * @dev Return the address of the message sender
+     * @return senderAddress Address of the message sender.
      */
     function _msgSender() internal view virtual returns (address) {
         return msg.sender;
     }
 
     /**
-     * @notice Return the data sendend by the message sender.
+     * @dev Return the data sendend by the message sender.
      * @return dataSended Data sended.
      */
     function _msgData() internal view virtual returns (bytes calldata) {
@@ -28,7 +28,7 @@ abstract contract Context {
     }
 
     /**
-     * @notice Return the value sendend by the message sender.
+     * @dev Return the value sendend by the message sender.
      * @return valueSended Value sended.
      */
     function _msgValue() internal view virtual returns (uint) {

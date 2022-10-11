@@ -4,7 +4,8 @@ pragma solidity ^0.8.17;
 /**
  * @title An Interface  for fair strong delivery.
  * @author Davide Bonaventura
- * @notice This interface exposes all the methods, events and errors that a Smart Contract who wants to implement the non-repudiation protocol must have.
+ * @dev This interface exposes all the methods, events and errors that a Smart Contract
+ * who wants to implement the non-repudiation protocol must have.
  */
 interface IFairDelivery {
     // -- TYPES --
@@ -15,8 +16,7 @@ interface IFairDelivery {
 
     // -- ENUMS --
     /** 
-     * @notice Allowed state for any protocol instance.
-     * @dev This enum contains all states allowed by the contract for any execution of the protocol.
+     * @dev Contains all states allowed by the contract for any execution of the protocol.
      */
     enum MessageState {
         NULL_STATE,
@@ -37,11 +37,11 @@ interface IFairDelivery {
 
     // -- EVENTS --
     /**
-     * @notice Pubblication of the NRO sign by the sender.
-     * @dev Publication of the non-repudiation of origin (NRO) sign by the sender.
+     * @dev This event is emitted when an NRO evidence is emitted in the blockchain logs by the contract.
+     * By publishing the NRO the recipient confirms that he has send the ciphertext.
      * @param label The label associated by the contract to the execution of the protocol carried out by the sender address.
      * @param sender_address The address with which the sender execute the protocol.
-     * @param nro The NRO sign.
+     * @param nro The NRO evidence.
      */
     event NonRepudiationOfOrigin(
         uint256 indexed label,
@@ -50,11 +50,11 @@ interface IFairDelivery {
     );
 
     /**
-     * @notice Pubblication of the NRR sign by the recipient.
-     * @dev By publishing the non-repudiation of receipt the recipient confirms that he has received the ciphertext correctly and wants to obtain the key.
+     * @dev This event is emitted when an NRR evidence is emitted in the blockchain logs by the contract.
+     * By publishing the NRR the recipient confirms that he has received the ciphertext correctly and wants to obtain the key.
      * @param label The label associated by the contract to the execution of the protocol carried out by the sender address.
      * @param sender_address The address with which the sender execute the protocol.
-     * @param nrr The NRR sign.
+     * @param nrr The NRR evidence.
      */
     event NonRepudiationOfReceipt(
         uint256 indexed label,
@@ -63,12 +63,12 @@ interface IFairDelivery {
     );
 
     /**
-     * @notice Pubblication of the key and of the CON_K sign.
-     * @dev This event allows the sender to publish the key. The key is published in plaintext. 
+     * @dev This event is emitted when an CON_K evidence is emitted in the blockchain logs by the contract.
+     * This event allows the sender to publish the key. The key is published in plaintext. 
      * @param label The label associated by the contract to the execution of the protocol carried out by the sender address.
      * @param sender_address The address with which the sender execute the protocol.
      * @param key The key to decrypt the cryptotext.
-     * @param con_k The CON_K sign.
+     * @param con_k The CON_K evidence.
      */
     event SubmissionOfKey(
         uint256 indexed label,
@@ -79,16 +79,17 @@ interface IFairDelivery {
 
     // -- FUNCTIONS --
     /**
-     * @notice Get the next label for a certain address.
-     * @dev It allows any user to get the label that the contract will associate with the next execution of a certain address.
+     * @dev Get the next label for a certain address.
+     * It allows any user to get the label that the contract will associate 
+     * with the next execution of a certain address.
      * @param _addr The address from which to get the next label.
      * @return nextLabel The next label that will be associated to the next execution of the protocol of the _addr.
      */
     function getNextLabel(address _addr) external returns (uint256);
  
     /**
-     * @notice This method allows the sender to publish the non-repudiation of origin sign.
-     * @dev The sender must pay for the contract in order to be able to execute the protocol.
+     * @dev This method allows the sender to publish the NRO evidence.
+     * The sender must pay for the contract in order to be able to execute the protocol.
      * @param nro The evidence to publish. 
      * @param nonce_hash A hash that allows the contract to publish the next evidence only by the correct recipient. The input of the hash is a value that only the correct recipient know.
      * @return label Returns the label associate with the protocol execution.
@@ -99,8 +100,8 @@ interface IFairDelivery {
         returns (uint256);
 
     /**
-     * @notice This method allows the recipient to publish the non-repudiation of receipt sign.
      * @dev This method allows the recipient to communicate that they have received the message and want to obtain the key to decrypt it.
+     * It allows the recipient to publish the NRR evidence.
      * @param nrr The evidence to publish. 
      * @param sender_address The address used from the sender to publish the previous evidence.
      * @param label The label associate with the protocol execution.
@@ -114,7 +115,7 @@ interface IFairDelivery {
     ) external;
 
     /**
-     * @notice This method allows the sender to publish the key that decrypts the message.
+     * @dev This method allows the sender to publish the key that decrypts the message.
      * @param key Symmetric key with which the message can be decrypted.
      * @param con_k The evidence to publish. 
      * @param label The label associate with the protocol execution.

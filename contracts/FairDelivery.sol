@@ -8,7 +8,8 @@ import "./Payable.sol";
 /**
  * @title A Smart Contract for fair strong delivery
  * @author Davide Bonaventura
- * @notice This Smart Contract allows you to obtain non-repudiation property for all messages exchanged using any service for the exchange of messages (like email, whatsapp, telegram, paper, ...).
+ * @dev This Smart Contract allows you to obtain non-repudiation property for all messages
+ * exchanged using any service for the exchange of messages (like email, whatsapp, telegram, paper, ...).
  */
 contract FairDelivery is Payable, Destructible, IFairDelivery {
     // -- Types --
@@ -30,15 +31,16 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
     mapping(address => uint256) public override getNextLabel;
 
     /**
-     * @dev This mapping allows you to know the state of any protocol execution performed from any address. This mapping is private.
+     * @dev This mapping allows you to know the state of any protocol execution performed from any address.
+     * This mapping is private.
      */
     mapping(address => mapping(uint256 => StateData))
         private currentProtocolState;
 
     // -- Modifiers --
     /**
-     * @notice Check if the caller address can execute the protocol another time.
-     * @dev The number of times each address can execute the protocol is limited to MAX_INT.
+     * @dev Check if the caller address can execute the protocol another time.
+     * The number of times each address can execute the protocol is limited to MAX_INT.
      */
     modifier labelsAvailable {
         if (getNextLabel[_msgSender()] == MAX_INT)
@@ -50,9 +52,10 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
     }
 
     /**
-     * @notice Check if the expected state of the protocol matches its current state.
-     * @dev Not all state changes are allowed.
-     * @param expectedState The state in which the execution of the protocol should be in order for the change of status to be allowed.
+     * @dev Check if the expected state of the protocol matches its current state.
+     * Not all state changes are allowed.
+     * @param expectedState The state in which the execution of the protocol should be 
+     * in order for the change of status to be allowed.
      * @param currentState The current state of the execution of the protocol whose state you want to change is.
      */
     modifier checkMessageState(
@@ -69,8 +72,9 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
     }
 
     /**
-     * @notice Check if the address that is trying to publish the NRR evidence for a certain protocol execution belongs to the recipient of the message.
-     * @dev Only an address belonging to the recipient should be able to publish the NRR evidence.
+     * @dev Check if the address that is trying to publish the NRR evidence for a certain protocol
+     * execution belongs to the recipient of the message.
+     * Only an address belonging to the recipient should be able to publish the NRR evidence.
      * @param sender_address .
      * @param nonce A number that only the correct recipient should know.
      * @param label .
@@ -95,8 +99,9 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
     }
 
     /**
-     * @notice This is the constructor of the contract.
-     * @dev The constructor invoke the constructor of the contracts which it extends by passing the appropriate parameters.
+     * @dev This is the constructor of the contract.
+     * The constructor invoke the constructor of the contracts which it extends
+     * by passing the appropriate parameters.
      * @param minFee The minimum fee to start a new instance of the protocol.
      */
     constructor(uint256 minFee) payable Payable(minFee) {

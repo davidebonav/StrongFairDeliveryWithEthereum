@@ -22,7 +22,6 @@ abstract contract Ownable is Context {
     address private _owner;
 
     /**
-     * @notice Notify the transfer of ownership of the contract.
      * @dev This event is emitted when the contract owner transfers ownership to another address.
      * @param previousOwner Address of the previous owner.
      * @param newOwner Address of the new owner.
@@ -30,7 +29,6 @@ abstract contract Ownable is Context {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
-     * @notice This is the constructor of the contract.
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
     constructor() {
@@ -38,8 +36,8 @@ abstract contract Ownable is Context {
     }
 
     /**
-     * @notice Check if the method caller is the owner of the contract
-     * @dev Throws if called by any account other than the owner.
+     * @dev Check if the method caller is the owner of the contract
+     * Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
         _checkOwner();
@@ -47,8 +45,8 @@ abstract contract Ownable is Context {
     }
 
     /**
-     * @notice Returns the address of the current owner.
-     * @dev This method is public, it can be invoked by anyone to know who is the owner of the contract.
+     * @dev Returns the address of the current owner.
+     * This method is public, it can be invoked by anyone to know who is the owner of the contract.
      * @return address Return the address of the current contract owner.
      */
     function owner() public view virtual returns (address) {
@@ -56,16 +54,16 @@ abstract contract Ownable is Context {
     }
 
     /**
-     * @notice This function check if the message sender is the owner.
-     * @dev Throws if the sender is not the owner. The function is internal, it can be call only in the contract.
+     * @dev This function check if the message sender is the owner.
+     * Throws if the sender is not the owner. The function is internal, it can be call only in the contract.
      */
     function _checkOwner() internal view virtual {
         require(owner() == _msgSender(), "Ownable: caller is not the owner");
     }
 
     /**
-     * @notice Transfers ownership of the contract to a new account (`newOwner`).
-     * @dev Can only be called by the current owner.
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
      * @param newOwner Address of the new owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
@@ -74,8 +72,8 @@ abstract contract Ownable is Context {
     }
 
     /**
-     * @notice Transfers ownership of the contract to a new account (`newOwner`). 
-     * @dev Internal function without access restriction. Emit the OwnershipTransferred event after the owner is changed.
+     * @dev Transfers ownership of the contract to a new account (`newOwner`). 
+     * Internal function without access restriction. Emit the OwnershipTransferred event after the owner is changed.
      * @param newOwner Address of the new owner.
      */ 
     function _transferOwnership(address newOwner) internal virtual {
