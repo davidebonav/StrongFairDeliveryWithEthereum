@@ -1,7 +1,6 @@
 const { expect } = require("chai");
 const { loadFixture, setBalance } = require("@nomicfoundation/hardhat-network-helpers");
 
-
 describe("FairDelivery contract", function () {
 
   async function deployFairDeliveryFixture() {
@@ -132,6 +131,18 @@ describe("FairDelivery contract", function () {
         expect(await fairDeliveryContract.connect(owner).payToOwner(10)).to.changeEtherBalance(addr1, amount);
       });
     });
-
   });
+
+  describe("is FairDelivery", function () {
+    // mapping(address => uint256) public override getNextLabel;
+    it("getNextLabel should return the correct label", async function(){
+      const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
+      expect(await fairDeliveryContract.getNextLabel(addr1.address)).to.equal(0);
+
+      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"));
+      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"));
+      expect(await fairDeliveryContract.getNextLabel(addr1.address)).to.equal(2);
+    });
+  });
+
 });
