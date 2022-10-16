@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { loadFixture, setBalance } = require("@nomicfoundation/hardhat-network-helpers");
+const { ethers } = require("hardhat");
 
 describe("FairDelivery contract", function () {
 
@@ -135,12 +136,12 @@ describe("FairDelivery contract", function () {
 
   describe("is FairDelivery", function () {
     // mapping(address => uint256) public override getNextLabel;
-    it("getNextLabel should return the correct label", async function(){
+    it("getNextLabel should return the correct label", async function () {
       const { fairDeliveryContract, addr1, minFee } = await loadFixture(deployFairDeliveryFixture);
       expect(await fairDeliveryContract.getNextLabel(addr1.address)).to.equal(0);
 
-      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"),{value: minFee});
-      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"),{value: minFee});
+      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"), { value: minFee });
+      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"), { value: minFee });
       expect(await fairDeliveryContract.getNextLabel(addr1.address)).to.equal(2);
     });
 
@@ -150,7 +151,7 @@ describe("FairDelivery contract", function () {
         let nro = 12345;
         let nonce = ethers.utils.formatBytes32String("nonce");
         let label = await fairDeliveryContract.getNextLabel(addr1.address);
-        expect(await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce,{value: minFee})).to.emit(fairDeliveryContract, "NonRepudiationOfOrigin").withArgs(label, addr1.address, nro);
+        expect(await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce, { value: minFee })).to.emit(fairDeliveryContract, "NonRepudiationOfOrigin").withArgs(label, addr1.address, nro);
       });
 
       it("The transaction must fail if not enough fee is sent", async function () {
@@ -158,11 +159,58 @@ describe("FairDelivery contract", function () {
         let nro = 12345;
         let nonce = ethers.utils.formatBytes32String("nonce");
         let label = await fairDeliveryContract.getNextLabel(addr1.address);
-        expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce,{value: (minFee-1)})).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
+        expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce, { value: (minFee - 1) })).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
         expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce)).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
       });
-
     });
+
+    describe("test nonRepudiationOfReceipt function", function () {
+      it("The function should emit the event with flag nrr correctly", async function () {
+        const { fairDeliveryContract, addr1, addr2, minFee } = await loadFixture(deployFairDeliveryFixture);
+        let nro = 12345;
+        let nrr = 67890;
+        let nonce = ethers.utils.formatBytes32String("nonce");
+        let nonce_hah = ethers.utils.keccak256(nonce);
+        let label = await fairDeliveryContract.getNextLabel(addr1.address);
+
+        fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce_hah, { value: minFee });
+        expect(await fairDeliveryContract.connect(addr2).nonRepudiationOfReceipt(nrr, addr1.address, label, nonce)).to.emit(fairDeliveryContract, "NonRepudiationOfReceipt").withArgs(label, addr1.address, nrr);
+      });
+
+      it("The transaction must fail if the nonce is not correct", async function () {
+        const { fairDeliveryContract, addr1, addr2, minFee } = await loadFixture(deployFairDeliveryFixture);
+        let nro = 12345;
+        let nrr = 67890;
+        let label = await fairDeliveryContract.getNextLabel(addr1.address);
+
+        let nonce = ethers.utils.formatBytes32String("nonce");
+        let nonce_errata = ethers.utils.formatBytes32String("nonce errata");
+        let expectedHash = ethers.utils.keccak256(nonce);
+        let currentHash = ethers.utils.keccak256(nonce_errata);
+
+        await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, expectedHash, { value: minFee });
+        expect(fairDeliveryContract.connect(addr2).nonRepudiationOfReceipt(nrr, addr1.address, label, nonce_errata)).to.be.revertedWithCustomError(fairDeliveryContract, "UnauthorizedAddress").withArgs(expectedHash, currentHash);
+      });
+    });
+
+    describe("test submissionOfKey function", function () {
+      it("The function should emit the event with flag sub_k and the key correctly", async function () {
+        const { fairDeliveryContract, addr1, addr2, minFee } = await loadFixture(deployFairDeliveryFixture);
+        let nro = 12345;
+        let nrr = 67890;
+        let sub_k = 13456
+        let key = 111;
+        let nonce = ethers.utils.formatBytes32String("nonce");
+        let nonce_hah = ethers.utils.keccak256(nonce);
+        let label = await fairDeliveryContract.getNextLabel(addr1.address);
+
+        await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce_hah, { value: minFee });
+        await fairDeliveryContract.connect(addr2).nonRepudiationOfReceipt(nrr, addr1.address, label, nonce);
+        expect(await fairDeliveryContract.connect(addr1).submissionOfKey(key, sub_k, label)).to.emit(fairDeliveryContract, "SubmissionOfKey").withArgs(label, addr1.address, key, sub_k);
+      });
+    });
+
+
   });
 
 });

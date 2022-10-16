@@ -117,16 +117,16 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
         labelsAvailable
         checkMessageState(
             MessageState.NULL_STATE,
-            currentProtocolState[msg.sender][getNextLabel[msg.sender]].state
+            currentProtocolState[_msgSender()][getNextLabel[_msgSender()]].state
         )
         enoughFee
         returns (uint256 label)
     {
-        label = getNextLabel[msg.sender]++;
-        currentProtocolState[msg.sender][label].state = MessageState.NRO;
-        currentProtocolState[msg.sender][label].nonce = nonce;
+        label = getNextLabel[_msgSender()]++;
+        currentProtocolState[_msgSender()][label].state = MessageState.NRO;
+        currentProtocolState[_msgSender()][label].nonce = nonce;
 
-        emit NonRepudiationOfOrigin(label, msg.sender, nro);
+        emit NonRepudiationOfOrigin(label, _msgSender(), nro);
     }
 
     /// @inheritdoc IFairDelivery
@@ -160,12 +160,12 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
         validAddress
         checkMessageState(
             MessageState.NRR,
-            currentProtocolState[msg.sender][getNextLabel[msg.sender]].state
+            currentProtocolState[_msgSender()][label].state
         )
     {
-        currentProtocolState[msg.sender][label].state = MessageState.CON_K;
-        delete currentProtocolState[msg.sender][label].nonce;
+        currentProtocolState[_msgSender()][label].state = MessageState.CON_K;
+        delete currentProtocolState[_msgSender()][label].nonce;
 
-        emit SubmissionOfKey(label, msg.sender, key, sub_k);
+        emit SubmissionOfKey(label, _msgSender(), key, sub_k);
     }
 }
