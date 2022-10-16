@@ -45,7 +45,7 @@ contract Payable is Ownable {
      */
     modifier enoughBalance(uint256 amount) {
         if(amount > address(this).balance)
-            revert NotEnoughFee("The amount must be less than or equal to the current balance", minimumFee);
+            revert NotEnoughBalance("The amount must be less than or equal to the current balance", address(this).balance);
         _;
     }
 
