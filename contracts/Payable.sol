@@ -33,7 +33,7 @@ contract Payable is Ownable {
      * Throws if the currency sent is less than the minimum fee.
      */
     modifier enoughFee {
-        if(minimumFee < _msgValue())
+        if(minimumFee > _msgValue())
             revert NotEnoughFee("The fee must be greater than or equal to the minimum", minimumFee);
         _;
     }
@@ -45,7 +45,7 @@ contract Payable is Ownable {
      */
     modifier enoughBalance(uint256 amount) {
         if(amount > address(this).balance)
-            revert NotEnoughFee("The amount must be less than or equal to the current balance", minimumFee);
+            revert NotEnoughBalance("The amount must be less than or equal to the current balance", address(this).balance);
         _;
     }
 

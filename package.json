@@ -1,0 +1,30 @@
+{
+  "name": "strong-fair-delivery-ethereum",
+  "version": "1.0.0",
+  "description": "Implementazione di uno Smart Contract per svolgere il ruolo di TTP in una variante del protocollo di Zhou-Gollmann per lequo recapito forte.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidebonav/StrongFairDeliveryWithEthereum.git"
+  },
+  "keywords": [
+    "solidity",
+    "Smart-Contract",
+    "non-repudiation-protocoll",
+    "fair-delivery",
+    "Zhou-Gollmann"
+  ],
+  "author": "Davide Bonaventura",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davidebonav/StrongFairDeliveryWithEthereum+/issues"
+  },
+  "homepage": "https://github.com/davidebonav/StrongFairDeliveryWithEthereum+#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.11.2"
+  }
+}
