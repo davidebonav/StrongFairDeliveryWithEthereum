@@ -10,7 +10,7 @@ describe("FairDelivery contract", function () {
     let minFee = 10;
 
     // To deploy our contract, we just have to call Token.deploy() and await
-    // its deployed() method, which happens onces its transaction has been
+    // its deployed() function, which happens onces its transaction has been
     // mined.
     const fairDeliveryContract = await FairDelivery.deploy(minFee);
     await fairDeliveryContract.deployed();
@@ -24,7 +24,7 @@ describe("FairDelivery contract", function () {
       expect(await fairDeliveryContract.owner()).to.equal(owner.address);
     });
 
-    describe("test transferOwnership method", function () {
+    describe("test transferOwnership function", function () {
       it("Should transfer the ownership of the contract correctly", async function () {
         const { fairDeliveryContract, owner, addr1 } = await loadFixture(deployFairDeliveryFixture);
         await fairDeliveryContract.connect(owner).transferOwnership(addr1.address);
@@ -76,13 +76,13 @@ describe("FairDelivery contract", function () {
       expect(await fairDeliveryContract.minimumFee()).to.equal(minFee);
     });
 
-    describe("test setMinimumFee method", function () {
+    describe("test setMinimumFee function", function () {
       it("Only the owner should can change the minimum fee", async function () {
         const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
         expect(fairDeliveryContract.connect(addr1).setMinimumFee(10)).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
-      it("The method must correctly change the minimum fee", async function () {
+      it("The function must correctly change the minimum fee", async function () {
         let newMinFee = 100;
 
         const { fairDeliveryContract, owner } = await loadFixture(deployFairDeliveryFixture);
@@ -92,8 +92,8 @@ describe("FairDelivery contract", function () {
       });
     });
 
-    describe("test payTo method", function () {
-      it("Only the owner should can call the method", async function () {
+    describe("test payTo function", function () {
+      it("Only the owner should can call the function", async function () {
         const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
         expect(fairDeliveryContract.connect(addr1).payTo(addr1.address, 10, true)).to.be.revertedWith("Ownable: caller is not the owner");
       });
@@ -103,7 +103,7 @@ describe("FairDelivery contract", function () {
         expect(fairDeliveryContract.connect(owner).payTo(owner.address, 10, true)).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughBalance").withArgs("The amount must be less than or equal to the current balance", /* the min fee */ 0);
       });
 
-      it("The method must correctly pay to the amount tu the address", async function () {
+      it("The function must correctly pay to the amount tu the address", async function () {
         const { fairDeliveryContract, owner, addr1 } = await loadFixture(deployFairDeliveryFixture);
         let amount = 100;
 
@@ -112,18 +112,18 @@ describe("FairDelivery contract", function () {
       });
     });
 
-    describe("test payToOwner method", function () {
-      it("Only the owner should can call the method", async function () {
+    describe("test payToOwner function", function () {
+      it("Only the owner should can call the function", async function () {
         const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
         expect(fairDeliveryContract.connect(addr1).payToOwner(10)).to.be.revertedWith("Ownable: caller is not the owner");
       });
 
       it("The balance of the contract must be greater than the amount to be paid", async function () {
         const { fairDeliveryContract, owner } = await loadFixture(deployFairDeliveryFixture);
-        expect(fairDeliveryContract.connect(owner).payToOwner(10)).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughBalance").withArgs("The amount must be less than or equal to the current balance", /* the min fee */ 0);
+        expect(fairDeliveryContract.connect(owner).payToOwner(10)).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughBalance").withArgs("The amount must be less than or equal to the current balance", /* the current balance */ 0);
       });
 
-      it("The method must correctly pay to the amount tu the address", async function () {
+      it("The function must correctly pay to the amount tu the address", async function () {
         const { fairDeliveryContract, owner, addr1 } = await loadFixture(deployFairDeliveryFixture);
         let amount = 100;
 
@@ -136,12 +136,32 @@ describe("FairDelivery contract", function () {
   describe("is FairDelivery", function () {
     // mapping(address => uint256) public override getNextLabel;
     it("getNextLabel should return the correct label", async function(){
-      const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
+      const { fairDeliveryContract, addr1, minFee } = await loadFixture(deployFairDeliveryFixture);
       expect(await fairDeliveryContract.getNextLabel(addr1.address)).to.equal(0);
 
-      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"));
-      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"));
+      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"),{value: minFee});
+      await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(1234, ethers.utils.formatBytes32String("nonce"),{value: minFee});
       expect(await fairDeliveryContract.getNextLabel(addr1.address)).to.equal(2);
+    });
+
+    describe("test nonRepudiationOfOrigin function", function () {
+      it("The function should emit the event with flag nro correctly", async function () {
+        const { fairDeliveryContract, addr1, minFee } = await loadFixture(deployFairDeliveryFixture);
+        let nro = 12345;
+        let nonce = ethers.utils.formatBytes32String("nonce");
+        let label = await fairDeliveryContract.getNextLabel(addr1.address);
+        expect(await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce,{value: minFee})).to.emit(fairDeliveryContract, "NonRepudiationOfOrigin").withArgs(label, addr1.address, nro);
+      });
+
+      it("The transaction must fail if not enough fee is sent", async function () {
+        const { fairDeliveryContract, addr1, minFee } = await loadFixture(deployFairDeliveryFixture);
+        let nro = 12345;
+        let nonce = ethers.utils.formatBytes32String("nonce");
+        let label = await fairDeliveryContract.getNextLabel(addr1.address);
+        expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce,{value: (minFee-1)})).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
+        expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce)).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
+      });
+
     });
   });
 

@@ -33,7 +33,7 @@ contract Payable is Ownable {
      * Throws if the currency sent is less than the minimum fee.
      */
     modifier enoughFee {
-        if(minimumFee < _msgValue())
+        if(minimumFee > _msgValue())
             revert NotEnoughFee("The fee must be greater than or equal to the minimum", minimumFee);
         _;
     }
