@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { loadFixture, setBalance } = require("@nomicfoundation/hardhat-network-helpers");
+const { loadFixture, setBalance, setStorageAt } = require("@nomicfoundation/hardhat-network-helpers");
 const { ethers } = require("hardhat");
 const { nro, nonce, minFee, nrr, nonce_hah, key, sub_k, nonce_errata } = require("./costants");
 
@@ -143,8 +143,8 @@ describe("FairDelivery contract", function () {
 
     describe("test nonRepudiationOfOrigin function", function () {
       it("The function should emit the event with flag nro correctly", async function () {
-        const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);        
-        
+        const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
+
         let label = await fairDeliveryContract.getNextLabel(addr1.address);
         expect(await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce, { value: minFee })).to.emit(fairDeliveryContract, "NonRepudiationOfOrigin").withArgs(label, addr1.address, nro);
       });
@@ -153,6 +153,16 @@ describe("FairDelivery contract", function () {
         const { fairDeliveryContract, addr1 } = await loadFixture(deployFairDeliveryFixture);
         expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce, { value: (minFee - 1) })).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
         expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce)).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughFee").withArgs("The fee must be greater than or equal to the minimum", minFee);
+      });
+
+      it("Each address can execute the protocol only MaxUint256 times", async function () {
+        const { fairDeliveryContract, addr1, addr2 } = await loadFixture(deployFairDeliveryFixture);
+
+        const index = ethers.utils.solidityKeccak256(["uint256", "uint256"], [addr1.address, 2] /* key, slot */);
+        await setStorageAt(fairDeliveryContract.address, index, ethers.constants.MaxUint256);
+        // let tmp = await getStorageAt(fairDeliveryContract.address, index);
+        // console.log(tmp);
+        expect(fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, nonce_hah, { value: minFee })).to.be.revertedWithCustomError(fairDeliveryContract, "NotEnoughLabels").withArgs(addr1.address, "Maximum number of labels for this address reached, use a different one");
       });
     });
 
