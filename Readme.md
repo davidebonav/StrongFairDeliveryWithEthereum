@@ -11,3 +11,8 @@ Per eseguire i test dello Smart Contract con Hardhat
 ```shell
     npx hardhat test
 ```
+
+Per ottenere la _code coverage_ dello Smart Contract
+```shell
+    npx hardhat coverage
+```

@@ -26,5 +26,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "hardhat": "^2.11.2"
+  },
+  "dependencies": {
+    "solidity-coverage": "^0.8.2"
   }
 }
