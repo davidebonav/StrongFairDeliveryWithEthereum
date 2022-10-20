@@ -83,7 +83,7 @@ contract FairDelivery is Payable, Destructible, IFairDelivery {
         bytes32 expectedHash = currentProtocolState[sender_address][label].nonce;
         bytes32 currentHash = keccak256(abi.encode(nonce));
 
-        if (currentHash != expectedHash)
+        if (currentHash != expectedHash || label >= getNextLabel[sender_address])
             revert UnauthorizedAddress(expectedHash, currentHash);
         _;
     }
