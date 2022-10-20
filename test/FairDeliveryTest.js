@@ -185,6 +185,17 @@ describe("FairDelivery contract", function () {
         await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, expectedHash, { value: minFee });
         expect(fairDeliveryContract.connect(addr2).nonRepudiationOfReceipt(nrr, addr1.address, label, nonce_errata)).to.be.revertedWithCustomError(fairDeliveryContract, "UnauthorizedAddress").withArgs(expectedHash, currentHash);
       });
+
+      it("The label must be associated with an execution of the protocol by the sender's address", async function () {
+        const { fairDeliveryContract, addr1, addr2 } = await loadFixture(deployFairDeliveryFixture);
+        let label = await fairDeliveryContract.getNextLabel(addr1.address);
+
+        let expectedHash = ethers.utils.keccak256(nonce);
+        let currentHash = ethers.utils.keccak256(nonce_errata);
+
+        await fairDeliveryContract.connect(addr1).nonRepudiationOfOrigin(nro, expectedHash, { value: minFee });
+        expect(fairDeliveryContract.connect(addr2).nonRepudiationOfReceipt(nrr, addr1.address, label+1, nonce_errata)).to.be.revertedWithCustomError(fairDeliveryContract, "UnauthorizedAddress").withArgs(expectedHash, currentHash);
+      });
     });
 
     describe("test submissionOfKey function", function () {
